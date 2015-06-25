@@ -2,12 +2,16 @@
 
 class Telegram extends Adapter
 
-   constructor: (robot) ->
-    @robot = robot
-    @token = process.env['TELEGRAM_TOKEN'] || ''
-    @robot.logger.info "Constructor"
-    @api_url = "https://api.telegram.org/bot#{token}/"
+  constructor: ->
+    super
+    @robot.logger.info "Telegram Adapter"
 
+    @token = process.env['TELEGRAM_TOKEN'] || ''
+    @api_url = "https://api.telegram.org/bot#{@token}"
+    
+    @webHook = null
+    @lastMessage = 1
+    
   send: (envelope, strings...) ->
     @robot.logger.info "Send"
     
@@ -21,15 +25,28 @@ class Telegram extends Adapter
   reply: (envelope, strings...) ->
     @robot.logger.info "Reply"
 
+  receiveMsg: (msg) ->
+    user = @robot.brain.userForId msg.message.from.id, name: msg.message.from.username, room: msg.message.chat.id
+    message = new TextMessage user, msg.message.text, msg.message.message_id
+    @receive message
+    @lastMessage = msg.update_id
+    
   run: ->
     self = @
     @robot.logger.info "Run"
     @emit "connected"
     
-    self.robot.router.post "/telegram/receive", (req, res) ->
-      for msg in req.body.result
-        self.receive new TextMessage msg.message.from, msg.message.text, msg.message.chat.id
-
+    if @webHook
+      self.robot.router.post "/telegram/receive", (req, res) ->
+        for msg in req.body.result
+          self.receiveMsg msg
+    else
+      setTimeout ->
+        self.robot.http("#{self.api_url}/getUpdates?offset=#{self.lastMessage}").get() (err, res, body) ->
+          updates = JSON.parse body
+          for msg in updates.result
+            self.receiveMsg msg
+      , 1000
 
 exports.use = (robot) ->
   new Telegram robot
