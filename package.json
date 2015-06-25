@@ -20,5 +20,8 @@
   "bugs": {
     "url": "https://github.com/lukefx/hubot-telegram/issues"
   },
-  "homepage": "https://github.com/lukefx/hubot-telegram"
+  "homepage": "https://github.com/lukefx/hubot-telegram",
+  "dependencies": {
+    "request": "^2.58.0"
+  }
 }
