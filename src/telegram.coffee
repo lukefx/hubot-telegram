@@ -8,31 +8,52 @@ class Telegram extends Adapter
     @robot.logger.info "Telegram Adapter loaded"
 
     @token = process.env['TELEGRAM_TOKEN']
-    @api_url = "https://api.telegram.org/bot#{@token}"
-    
     @webHook = process.env['TELEGRAM_WEBHOOK']
-    @lastUpdateId = 0
+    @api_url = "https://api.telegram.org/bot#{@token}"
+    @offset = 0
+    
+    # Get the Bot Id and name...not used by now
+    request "#{@api_url}/getMe", (err, res, body) =>
+      @id = JSON.parse(body).result.id if res.statusCode == 200
     
   send: (envelope, strings...) ->
    
-    reply = 
-      chat_id: envelope.room
-      text: strings.join()
+    data =
+      url: "#{@api_url}/sendMessage"
+      form:
+        chat_id: envelope.room
+        text: strings.join()
     
-    request.post { url: "#{@api_url}/sendMessage", form: reply }, (err, httpResponse, body) =>
-      @robot.logger.info httpResponse.statusCode
+    request.post data, (err, res, body) =>
+      @robot.logger.info res.statusCode
 
   reply: (envelope, strings...) ->
-    @robot.logger.info "Reply"
+  
+    data =
+      url: "#{@api_url}/sendMessage"
+      form:
+        chat_id: envelope.room
+        text: strings.join()
+    
+    request.post data, (err, res, body) =>
+      @robot.logger.info res.statusCode    
 
   receiveMsg: (msg) ->
+    
     user = @robot.brain.userForId msg.message.from.id, name: msg.message.from.username, room: msg.message.chat.id
-    message = new TextMessage user, msg.message.text, msg.message_id
-    @receive message
-    @lastUpdateId = msg.update_id
+    text = msg.message.text
+    
+    # Only if it's a text message, not join or leaving events
+    if text
+      # If is a direct message to the bot, prepend the name
+      text = @robot.name + ' ' + msg.message.text if msg.message.chat.id > 0
+      message = new TextMessage user, text, msg.message_id
+      @receive message
+      @offset = msg.update_id
 
-  getLastUpdateId: ->
-    parseInt(@lastUpdateId) + 1
+  getLastOffset: ->
+    # Increment the last offset
+    parseInt(@offset) + 1
     
   run: ->
     self = @
@@ -43,6 +64,14 @@ class Telegram extends Adapter
     
     if @webHook
       # Call `setWebHook` to dynamically set the URL
+      data =
+        url: "#{@api_url}/setWebHook"
+        form:
+          url: @webHook
+      
+      request.post data, (err, res, body) =>
+        @robot.logger.info res.statusCode
+      
       @robot.router.post "/telegram/receive", (req, res) =>
         console.log req.body
         for msg in req.body.result
@@ -50,7 +79,7 @@ class Telegram extends Adapter
           @receiveMsg msg
     else
       setInterval ->
-        url = "#{self.api_url}/getUpdates?offset=#{self.getLastUpdateId()}"
+        url = "#{self.api_url}/getUpdates?offset=#{self.getLastOffset()}"
         self.robot.http(url).get() (err, res, body) ->
           self.emit 'error', new Error err if err
           updates = JSON.parse body
