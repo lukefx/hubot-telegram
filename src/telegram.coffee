@@ -1,4 +1,3 @@
-# {Robot, Adapter, TextMessage, EnterMessage, LeaveMessage, TopicMessage} = require 'hubot'
 {Robot, Adapter, TextMessage, User} = require 'hubot'
 request = require 'request'
 
@@ -6,40 +5,34 @@ class Telegram extends Adapter
 
   constructor: ->
     super
-    @robot.logger.info "Telegram Adapter"
+    @robot.logger.info "Telegram Adapter loaded"
 
     @token = process.env['TELEGRAM_TOKEN']
     @api_url = "https://api.telegram.org/bot#{@token}"
     
-    @webHook = null
-    @lastMessage = 1
+    @webHook = process.env['TELEGRAM_WEBHOOK']
+    @lastUpdateId = 0
     
   send: (envelope, strings...) ->
-    self = @
-    @robot.logger.info "Send"
-    
-    console.log envelope
-    console.log strings
-    
+   
     reply = 
       chat_id: envelope.room
       text: strings.join()
     
-    console.log reply
-    
-    request.post { url: "#{@api_url}/sendMessage", form: reply }, (err, httpResponse, body) ->
-      self.robot.logger.info body
+    request.post { url: "#{@api_url}/sendMessage", form: reply }, (err, httpResponse, body) =>
+      @robot.logger.info httpResponse.statusCode
 
   reply: (envelope, strings...) ->
     @robot.logger.info "Reply"
 
   receiveMsg: (msg) ->
-    console.log "Receiving message!"
     user = @robot.brain.userForId msg.message.from.id, name: msg.message.from.username, room: msg.message.chat.id
-    # user = new User msg.message.from.id, name: msg.message.from.username, room: msg.message.chat.id
     message = new TextMessage user, msg.message.text, msg.message_id
     @receive message
-    @lastMessage = msg.update_id
+    @lastUpdateId = msg.update_id
+
+  getLastUpdateId: ->
+    parseInt(@lastUpdateId) + 1
     
   run: ->
     self = @
@@ -49,13 +42,17 @@ class Telegram extends Adapter
       @emit 'error', new Error `'The environment variable \`\033[31mTELEGRAM_TOKEN\033[39m\` is required.'`
     
     if @webHook
-      self.robot.router.post "/telegram/receive", (req, res) ->
+      # Call `setWebHook` to dynamically set the URL
+      @robot.router.post "/telegram/receive", (req, res) =>
+        console.log req.body
         for msg in req.body.result
-          console.log "WebHook"
-          self.receiveMsg msg
+          @robot.logger.info "WebHook"
+          @receiveMsg msg
     else
       setInterval ->
-        self.robot.http("#{self.api_url}/getUpdates?offset=#{self.lastMessage}").get() (err, res, body) ->
+        url = "#{self.api_url}/getUpdates?offset=#{self.getLastUpdateId()}"
+        self.robot.http(url).get() (err, res, body) ->
+          self.emit 'error', new Error err if err
           updates = JSON.parse body
           for msg in updates.result
             self.receiveMsg msg
@@ -65,4 +62,3 @@ class Telegram extends Adapter
       
 exports.use = (robot) ->
   new Telegram robot
-  
