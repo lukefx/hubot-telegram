@@ -1,27 +1,32 @@
 {
-  "name": "hubot-telegram",
-  "version": "0.0.2",
-  "description": "Hubot adapter for Telegram",
-  "main": "src/telegram",
-  "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
-  },
-  "repository": {
-    "type": "git",
-    "url": "https://github.com/lukefx/hubot-telegram.git"
-  },
-  "keywords": [
-    "hubot",
-    "dapter",
-    "telegram"
-  ],
-  "author": "Luca Simone <info@lucasimone.info>",
-  "license": "MIT",
-  "bugs": {
-    "url": "https://github.com/lukefx/hubot-telegram/issues"
-  },
-  "homepage": "https://github.com/lukefx/hubot-telegram",
-  "dependencies": {
-    "request": "^2.58.0"
-  }
+    "name": "hubot-telegram",
+    "version": "0.0.2",
+    "description": "Hubot adapter for Telegram",
+    "main": "./src/telegram",
+    "scripts": {
+        "test": "echo \"Error: no test specified\" && exit 1"
+    },
+    "repository": {
+        "type": "git",
+        "url": "https://github.com/lukefx/hubot-telegram.git"
+    },
+    "keywords": [
+        "hubot",
+        "adapter",
+        "telegram",
+        "telegram hubot",
+        "hubot telegram"
+    ],
+    "author": "Luca Simone <info@lucasimone.info>",
+    "contributors": [
+        "Chris Brand <chris@chrisbrand.co.za> (http://www.chrisbrand.co.za)"
+    ],
+    "license": "MIT",
+    "bugs": {
+        "url": "https://github.com/lukefx/hubot-telegram/issues"
+    },
+    "homepage": "https://github.com/lukefx/hubot-telegram",
+    "dependencies": {
+        "telegrambot": "*"
+    }
 }
