@@ -1,43 +1,32 @@
-# hubot-telegram
-Hubot adapter for Telegram
+# Hubot Telegram Adapter
 
-### Setup
+[Hubot](https://hubot.github.com/docs/) adapter for interfacting with the [Telegram Bot API](https://core.telegram.org/bots/api)
 
-First of read the docs on how to create a new bot: https://core.telegram.org/bots/api
+## Installation & Usage
 
-    mkdir <botname>
-    cd <botname>
-    yo hubot --adapter telegram
-    # Follow the instructions
+First of read the docs on how to create a new [Telegram Bot](https://core.telegram.org/bots#botfather). Once you have a bot created, follow these steps:
 
-Or if you already have a bot:
+* npm install --save hubot-telegram
+* Set the environment variables specified in **Configuration**
+* Run hubot `bin/hubot -a telegram`
 
-    cd <botname>
-    npm install --save hubot-telegram
-
-### Adapter configuration
+## Configuration
 
 This adapter uses the following environment variables:
 
-*TELEGRAM_TOKEN*
+**TELEGRAM_TOKEN** (required)
 
-Required, the token that the BotFather gives you
+The token that the [BotFather](https://core.telegram.org/bots#botfather) gives you
 
-*TELEGRAM_WEBHOOK*
+**TELEGRAM_WEBHOOK** (optional)
 
-Optional, the WebHook of the bot
+You can specify a [webhook](https://core.telegram.org/bots/api#setwebhook) URL which the adapter will register with Telegram. This URL will receive updates from Telegram. The adapter automatically registers an endpoint with Hubot at http://your-hobot-host/hubot/telegram/receive.
 
-## Run the bot
+**TELEGRAM_INTERVAL** (optional)
 
-    ./bin/hubot -a telegram
+You can specify the interval (in milliseconds) in which the adapter will poll Telegram for updates. This option only applies if you are not using a [webhook](https://core.telegram.org/bots/api#setwebhook).
 
-Or with Foreman, create a file .env with the env vars in key=val format:
+## Contributors
 
-    # HUBOT_LOG_LEVEL=debug
-    TELEGRAM_TOKEN=1234567890:XXXXXXXXXXX
-    REDIS_URL=redis://user:pass@redsurl:8080
-    TELEGRAM_WEBHOOK=https://urlofhubot/hubot/telegram/receive
-
-Then start the service with:
-
-    nf start
+* Luke Simone - [https://github.com/lukefx](https://github.com/lukefx)
+* Chris Brand - [https://github.com/arcturial](https://github.com/arcturial)
