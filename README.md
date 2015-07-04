@@ -6,7 +6,7 @@
 
 First of read the docs on how to create a new [Telegram Bot](https://core.telegram.org/bots#botfather). Once you have a bot created, follow these steps:
 
-* npm install --save hubot-telegram
+* `npm install --save hubot-telegram`
 * Set the environment variables specified in **Configuration**
 * Run hubot `bin/hubot -a telegram`
 
