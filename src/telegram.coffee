@@ -25,6 +25,10 @@ class Telegram extends Adapter
                 self.bot_firstname = result.first_name
                 self.robot.logger.info "Telegram Bot Identified: " + self.bot_firstname
 
+                if self.bot_username != self.robot.name
+                    self.robot.logger.warning "It is advised to use the same bot name as your Telegram Bot: " + self.bot_username
+                    self.robot.logger.warning "Having a different bot name can result in an inconsistent experience when using @mentions"
+
     ###*
     # Get the last offset + 1, this will allow
     # the Telegram API to only return new relevant messages
@@ -87,7 +91,6 @@ class Telegram extends Adapter
 
             # If we are running in privacy mode, strip out the stuff we don't need.
             text = text.replace(/^\//g, '')
-            text = text.replace(new RegExp('@' + @bot_username + '', 'g'), '')
 
             @robot.logger.debug "Received message: " + message.from.username + " said '" + text + "'"
 
