@@ -65,7 +65,7 @@ class Telegram extends Adapter
     reply: (envelope, strings...) ->
         self = @
 
-        @telegram.invoke 'sendMessage', { chat_id: envelope.room, text: strings.join(), reply_to_message_id: envelope.message.id }, (err, message) =>
+        @api.invoke 'sendMessage', { chat_id: envelope.room, text: strings.join(), reply_to_message_id: envelope.message.id }, (err, message) =>
 
             if (err)
                 self.emit 'error', err
