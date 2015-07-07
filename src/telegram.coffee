@@ -92,6 +92,10 @@ class Telegram extends Adapter
             # If we are running in privacy mode, strip out the stuff we don't need.
             text = text.replace(/^\//g, '')
 
+            # If it is a private chat, automatically prepend the bot name if it does not exist already.
+            if (message.chat.id > 0 && text.substr(0, @robot.name.length) != @robot.name)
+                text = @robot.name + ' ' + text
+
             @robot.logger.debug "Received message: " + message.from.username + " said '" + text + "'"
 
             user = @createUser message.from, message.chat.id
