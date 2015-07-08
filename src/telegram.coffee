@@ -34,18 +34,19 @@ class Telegram extends Adapter
     # bot name and to strip Telegram specific characters such as the usage
     # of / when addressing a bot in privacy mode
     #
-    # @param object message
+    # @param string text
+    # @param int    chat_id
     #
     # @return string
     ###
-    cleanMessageText: (message) ->
+    cleanMessageText: (text, chat_id) ->
         # If we are running in privacy mode, strip out the stuff we don't need.
-        text = message.text.replace(/^\//g, '')
+        text = text.replace(/^\//g, '')
 
         # If it is a private chat, automatically prepend the bot name if it does not exist already.
-        if (message.chat.id > 0)
-            text = message.text.replace(new RegExp('/^@?' + @robot.name.toLowerCase() + '/', 'i'), '');
-            text = message.text.replace(new RegExp('/^@?' + @robot.alias.toLowerCase() + '/', 'i'), '') if @robot.alias
+        if (chat_id > 0)
+            text = text.replace(new RegExp('/^@?' + @robot.name.toLowerCase() + '/', 'i'), '');
+            text = text.replace(new RegExp('/^@?' + @robot.alias.toLowerCase() + '/', 'i'), '') if @robot.alias
             text = @robot.name + ' ' + text
 
         return text
@@ -108,7 +109,7 @@ class Telegram extends Adapter
 
         # Text event
         if (message.text)
-            text = @cleanMessageText message
+            text = @cleanMessageText message.text, message.chat.id
 
             @robot.logger.debug "Received message: " + message.from.username + " said '" + text + "'"
 
