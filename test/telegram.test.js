@@ -28,32 +28,28 @@ describe('Telegram', function() {
         // eg. BotName ship it => BotName ship it
         it('private chat: should not prepend bot name if has already been provided', function () {
 
-            var input = hubot.name + ' ship it';
-            var text = telegram.cleanMessageText(input, 1);
+            var input = 'ship it';
+            var text = telegram.cleanMessageText(hubot.name + ' ' + input, 1);
             assert.equal(hubot.name + ' ' + input, text);
 
-            var input = hubot.name.toLowerCase() + ' ship it';
-            var text = telegram.cleanMessageText(input, 1);
+            var text = telegram.cleanMessageText(hubot.name.toLowerCase() + ' ' + input, 1);
             assert.equal(hubot.name + ' ' + input, text);
 
-            var input = '@' + hubot.name.toLowerCase() + ' ship it';
-            var text = telegram.cleanMessageText(input, 1);
+            var text = telegram.cleanMessageText('@' + hubot.name.toLowerCase() + ' ' + input, 1);
             assert.equal(hubot.name + ' ' + input, text);
         });
 
         // eg. BotAliasName ship it => BotAliasName ship it
         it('private chat: should not prepend bot name if an alias has already been provided', function () {
 
-            var input = hubot.alias + ' ship it';
-            var text = telegram.cleanMessageText(input, 1);
+            var input = 'ship it';
+            var text = telegram.cleanMessageText(hubot.alias + ' ' + input, 1);
             assert.equal(hubot.name + ' ' + input, text);
 
-            var input = hubot.alias.toLowerCase() + ' ship it';
-            var text = telegram.cleanMessageText(input, 1);
+            var text = telegram.cleanMessageText(hubot.alias.toLowerCase() + ' ' + input, 1);
             assert.equal(hubot.name + ' ' + input, text);
 
-            var input = '@' + hubot.alias.toLowerCase() + ' ship it';
-            var text = telegram.cleanMessageText(input, 1);
+            var text = telegram.cleanMessageText('@' + hubot.alias.toLowerCase() + ' ' + input, 1);
             assert.equal(hubot.name + ' ' + input, text);
         });
     });
