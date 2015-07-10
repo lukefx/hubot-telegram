@@ -1,4 +1,4 @@
-# Hubot Telegram Adapter
+# Hubot Telegram Adapter [![Build Status](https://travis-ci.org/lukefx/hubot-telegram.svg?branch=feature-issue-5)](https://travis-ci.org/lukefx/hubot-telegram)
 
 [Hubot](https://hubot.github.com/docs/) adapter for interfacting with the [Telegram Bot API](https://core.telegram.org/bots/api)
 
