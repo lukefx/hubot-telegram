@@ -30,6 +30,7 @@
         "telegrambot": "*"
     },
     "devDependencies": {
+        "hubot": "*",
         "coffee-script": "*",
         "mocha": "*"
     }
