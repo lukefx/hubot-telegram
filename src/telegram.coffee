@@ -30,6 +30,28 @@ class Telegram extends Adapter
                     self.robot.logger.warning "Having a different bot name can result in an inconsistent experience when using @mentions"
 
     ###*
+    # Clean up the message text to remove duplicate mentions of the
+    # bot name and to strip Telegram specific characters such as the usage
+    # of / when addressing a bot in privacy mode
+    #
+    # @param string text
+    # @param int    chat_id
+    #
+    # @return string
+    ###
+    cleanMessageText: (text, chat_id) ->
+        # If we are running in privacy mode, strip out the stuff we don't need.
+        text = text.replace(/^\//g, '').trim()
+
+        # If it is a private chat, automatically prepend the bot name if it does not exist already.
+        if (chat_id > 0)
+            text = text.replace(new RegExp('^@?' + @robot.name.toLowerCase(), 'gi'), '');
+            text = text.replace(new RegExp('^@?' + @robot.alias.toLowerCase(), 'gi'), '') if @robot.alias
+            text = @robot.name + ' ' + text.trim()
+
+        return text
+
+    ###*
     # Get the last offset + 1, this will allow
     # the Telegram API to only return new relevant messages
     #
@@ -87,14 +109,7 @@ class Telegram extends Adapter
 
         # Text event
         if (message.text)
-            text = message.text
-
-            # If we are running in privacy mode, strip out the stuff we don't need.
-            text = text.replace(/^\//g, '')
-
-            # If it is a private chat, automatically prepend the bot name if it does not exist already.
-            if (message.chat.id > 0 && text.substr(0, @robot.name.length) != @robot.name)
-                text = @robot.name + ' ' + text
+            text = @cleanMessageText message.text, message.chat.id
 
             @robot.logger.debug "Received message: " + message.from.username + " said '" + text + "'"
 
