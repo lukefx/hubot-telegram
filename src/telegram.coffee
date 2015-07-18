@@ -150,8 +150,10 @@ class Telegram extends Adapter
                     self.emit 'error', err
 
             @robot.router.post "/hubot/telegram/receive", (req, res) =>
-                for msg in req.body.result
-                    self.handleUpdate msg
+                if req.body.message
+                    self.handleUpdate req.body
+
+                res.send 'OK'
 
         else
             setInterval ->
