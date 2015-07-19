@@ -1,6 +1,6 @@
 {
   "name": "hubot-telegram",
-  "version": "0.0.4",
+  "version": "0.0.5",
   "description": "Hubot adapter for Telegram",
   "main": "./src/telegram",
   "scripts": {
