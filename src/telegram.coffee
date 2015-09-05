@@ -85,7 +85,7 @@ class Telegram extends Adapter
         parts = (Math.ceil length / limit) - 1
 
         @robot.logger.debug "Message length: " + length
-        @robot.logger.debug "Message parts: " + parts
+        @robot.logger.debug "Message parts: " + (parts + 1)
 
         for part in [0..parts]
             offset = part * limit
