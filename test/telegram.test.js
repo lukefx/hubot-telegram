@@ -58,7 +58,7 @@ describe('Telegram', function() {
 
         it("should use the new user object if the first_name or last_name changed", function () {
 
-            telegram.robot.brain.data = [];
+            telegram.robot.brain.data = { users: [] };
 
             var original = {
                 id: 1234,

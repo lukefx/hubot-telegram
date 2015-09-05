@@ -77,8 +77,8 @@ class Telegram extends Adapter
         # Check for any changes, if the first or lastname updated...we will
         # user the new user object instead of the one from the brain
         if result.first_name != user.first_name or result.last_namme != user.last_name
-            @robot.brain.data[user.id] = user
-            @robot.logger.info "User " + user.id + " regenerated. Using persisting new user object."
+            @robot.brain.data.users[user.id] = user
+            @robot.logger.info "User " + user.id + " regenerated. Persisting new user object."
             return user
 
         return result
