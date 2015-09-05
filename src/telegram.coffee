@@ -15,6 +15,12 @@ class Telegram extends Adapter
 
         @robot.logger.info "Telegram Adapter Bot " + @token + " Loaded..."
 
+        ###*
+        # Listen for Telegram API invokes from other scripts
+        ###
+        @robot.on "telegram:invoke", (method, opts, cb) ->
+            self.api.invoke method, opts, cb
+
         # Get the bot information
         @api.invoke 'getMe', {}, (err, result) ->
             if (err)
