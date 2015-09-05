@@ -69,7 +69,19 @@ class Telegram extends Adapter
     # @return object
     ###
     createUser: (user, chat_id) ->
-        return @robot.brain.userForId user.id, name: user.username, room: chat_id
+        opts = user
+        opts.name = opts.username
+        opts.room = chat_id
+        result = @robot.brain.userForId user.id, opts
+
+        # Check for any changes, if the first or lastname updated...we will
+        # user the new user object instead of the one from the brain
+        if result.first_name != user.first_name or result.last_namme != user.last_name
+            @robot.brain.data[user.id] = user
+            @robot.logger.info "User " + user.id + " regenerated. Using persisting new user object."
+            return user
+
+        return result
 
     ###*
     # Send a message to a specific room via the Telegram API

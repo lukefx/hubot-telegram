@@ -12,5 +12,6 @@ module.exports = {
         info: void_func,
         warning: void_func,
         error: void_func
-    }
+    },
+    brain: {}
 }
