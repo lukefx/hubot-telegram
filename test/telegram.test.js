@@ -56,7 +56,7 @@ describe('Telegram', function() {
 
     describe("#send()", function () {
 
-        it('should not split messages below or equal to 4096 bytes', function () {
+        it('should not split messages below or equal to 4096 characters', function () {
 
             var called = 0;
 
@@ -66,7 +66,7 @@ describe('Telegram', function() {
             // Mock the API object
             telegram.api = {
                 invoke: function (method, opts) {
-                    assert.equal(Buffer.byteLength(opts.text, 'utf8'), 4096);
+                    assert.equal(opts.text.length, 4096);
                     called++;
                 }
             };
@@ -75,7 +75,7 @@ describe('Telegram', function() {
             assert.equal(called, 1);
         });
 
-        it('should split messages when they are above 4096 bytes', function () {
+        it('should split messages when they are above 4096 characters', function () {
 
             var called = 0;
 
@@ -86,34 +86,13 @@ describe('Telegram', function() {
             telegram.api = {
                 invoke: function (method, opts) {
                     var offset = called * 4096;
-                    assert.equal(Buffer.byteLength(opts.text, 'utf8'), Buffer.byteLength(message.substr(offset, offset + 4096)));
+                    assert.equal(opts.text.length, message.substr(offset, offset + 4096).length);
                     called++;
                 }
             };
 
             telegram.send({ room: 1 }, message);
             assert.equal(called, 2);
-        });
-
-        it('should split unicode messages when they are above 4096 bytes', function () {
-
-            var called = 0;
-            var chars = 3000;
-
-            var message = "";
-            for (var i = 0; i < chars; i++) message += '╚';
-
-            // Mock the API object
-            telegram.api = {
-                invoke: function (method, opts) {
-                    var offset = called * 4096;
-                    assert.equal(Buffer.byteLength(opts.text, 'utf8'), Buffer.byteLength(message.substr(offset, offset + 4096)));
-                    called++;
-                }
-            };
-
-            telegram.send({ room: 1 }, message);
-            assert.equal(called, Math.ceil((chars * 4) / 4096));
         });
 
     });

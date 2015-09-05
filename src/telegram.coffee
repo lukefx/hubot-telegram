@@ -77,17 +77,20 @@ class Telegram extends Adapter
     apiSend: (opts, cb) ->
         @self = @
         message = opts.text
-        bytes = Buffer.byteLength message, 'utf8'
-        limit = 4096
-        parts = (Math.ceil bytes / limit) - 1
 
-        @robot.logger.debug "Message bytes: " + bytes
+        # We rely on lenght since it does not seem that Telegram cares too much about unicode
+        # using more bytes than a normal string.
+        length = message.length
+        limit = 4096
+        parts = (Math.ceil length / limit) - 1
+
+        @robot.logger.debug "Message length: " + length
         @robot.logger.debug "Message parts: " + parts
 
         for part in [0..parts]
             offset = part * limit
             messagePart = message.substr offset, offset + limit
-            @robot.logger.debug "Sending message part " + part + " bytes: " + Buffer.byteLength(messagePart)
+            @robot.logger.debug "Sending message part " + part + " length: " + messagePart.length
             opts.text = messagePart
 
             @api.invoke 'sendMessage', opts, cb
