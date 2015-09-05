@@ -81,10 +81,13 @@ class Telegram extends Adapter
         limit = 4096
         parts = (Math.ceil bytes / limit) - 1
 
+        @robot.logger.debug "Message bytes: " + bytes
+        @robot.logger.debug "Message parts: " + parts
+
         for part in [0..parts]
             offset = part * limit
             messagePart = message.substr offset, offset + limit
-            @robot.logger.info "Sending message bytes: " + Buffer.byteLength(messagePart)
+            @robot.logger.debug "Sending message part " + part + " bytes: " + Buffer.byteLength(messagePart)
             opts.text = messagePart
 
             @api.invoke 'sendMessage', opts, cb
