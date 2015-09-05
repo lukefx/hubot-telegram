@@ -84,6 +84,7 @@ class Telegram extends Adapter
         for part in [0..parts]
             offset = part * limit
             messagePart = message.substr offset, offset + limit
+            @robot.logger.info "Sending message bytes: " + Buffer.byteLength(messagePart)
             opts.text = messagePart
 
             @api.invoke 'sendMessage', opts, cb
@@ -98,7 +99,7 @@ class Telegram extends Adapter
             if (err)
                 self.emit 'error', err
             else
-                self.robot.logger.info "Sending message (" + part + ") to room: " + envelope.room
+                self.robot.logger.info "Sending message to room: " + envelope.room
 
     ###*
     # The only difference between send() and reply() is that we add the "reply_to_message_id" parameter when
