@@ -28,6 +28,27 @@ You can specify a [webhook](https://core.telegram.org/bots/api#setwebhook) URL w
 
 You can specify the interval (in milliseconds) in which the adapter will poll Telegram for updates. This option only applies if you are not using a [webhook](https://core.telegram.org/bots/api#setwebhook).
 
+## Telegram Specific Functionality (ie. Stickers, Images)
+
+If you want to create a script that relies on specific Telegram functionality that is not available to Hubot normall, you can do so by emitting the `telegram:invoke` event in your script:
+
+``` nodejs
+
+module.exports = function (robot) {
+
+    robot.hear(/send sticker/i, function (res) {
+
+        # https://core.telegram.org/bots/api#sendsticker
+
+        robot.emit('telegram:invoke', 'sendSticker', { chat_id: xxx, sticker: 'sticker_id' }, function (error, response) {
+            console.log(error);
+            console.log(response);
+        });
+    });
+};
+
+```
+
 ## Contributors
 
 * Luke Simone - [https://github.com/lukefx](https://github.com/lukefx)
