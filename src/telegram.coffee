@@ -72,17 +72,33 @@ class Telegram extends Adapter
         return @robot.brain.userForId user.id, name: user.username, room: chat_id
 
     ###*
+    # Abstract send interaction with the Telegram API
+    ###
+    apiSend: (opts, cb) ->
+        @self = @
+        message = opts.text
+        bytes = Buffer.byteLength message, 'utf8'
+        limit = 4096
+        parts = (Math.ceil bytes / limit) - 1
+
+        for part in [0..parts]
+            offset = part * limit
+            messagePart = message.substr offset, offset + limit
+            opts.text = messagePart
+
+            @api.invoke 'sendMessage', opts, cb
+
+    ###*
     # Send a message to a specific room via the Telegram API
     ###
     send: (envelope, strings...) ->
         self = @
 
-        @api.invoke 'sendMessage', { chat_id: envelope.room, text: strings.join() }, (err, message) =>
-
+        @apiSend { chat_id: envelope.room, text: strings.join() }, (err, message) =>
             if (err)
                 self.emit 'error', err
             else
-                self.robot.logger.info "Sending message to room: " + envelope.room
+                self.robot.logger.info "Sending message (" + part + ") to room: " + envelope.room
 
     ###*
     # The only difference between send() and reply() is that we add the "reply_to_message_id" parameter when
@@ -91,8 +107,7 @@ class Telegram extends Adapter
     reply: (envelope, strings...) ->
         self = @
 
-        @api.invoke 'sendMessage', { chat_id: envelope.room, text: strings.join(), reply_to_message_id: envelope.message.id }, (err, message) =>
-
+        @apiSend { chat_id: envelope.room, text: strings.join(), reply_to_message_id: envelope.message.id }, (err, message) =>
             if (err)
                 self.emit 'error', err
             else
