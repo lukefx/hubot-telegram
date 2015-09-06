@@ -72,13 +72,37 @@ class Telegram extends Adapter
         return @robot.brain.userForId user.id, name: user.username, room: chat_id
 
     ###*
+    # Abstract send interaction with the Telegram API
+    ###
+    apiSend: (opts, cb) ->
+        @self = @
+        chunks = opts.text.match /[^]{1,4096}/g
+
+        @robot.logger.debug "Message length: " + opts.text.length
+        @robot.logger.debug "Message parts: " + chunks.length
+
+        # Chunk message delivery when required
+        send = (cb) =>
+            unless chunks.length == 0
+                current = chunks.shift()
+                opts.text = current
+
+                @api.invoke 'sendMessage', opts, (err, message) =>
+                    # Forward the callback to the original handler
+                    cb.apply @, [err, message]
+
+                    send cb
+
+        # Start the recursive chunking cycle
+        send cb
+
+    ###*
     # Send a message to a specific room via the Telegram API
     ###
     send: (envelope, strings...) ->
         self = @
 
-        @api.invoke 'sendMessage', { chat_id: envelope.room, text: strings.join() }, (err, message) =>
-
+        @apiSend { chat_id: envelope.room, text: strings.join() }, (err, message) =>
             if (err)
                 self.emit 'error', err
             else
@@ -91,8 +115,7 @@ class Telegram extends Adapter
     reply: (envelope, strings...) ->
         self = @
 
-        @api.invoke 'sendMessage', { chat_id: envelope.room, text: strings.join(), reply_to_message_id: envelope.message.id }, (err, message) =>
-
+        @apiSend { chat_id: envelope.room, text: strings.join(), reply_to_message_id: envelope.message.id }, (err, message) =>
             if (err)
                 self.emit 'error', err
             else

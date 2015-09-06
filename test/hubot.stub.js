@@ -11,6 +11,7 @@ module.exports = {
     logger: {
         info: void_func,
         warning: void_func,
-        error: void_func
+        error: void_func,
+        debug: void_func
     }
 }
