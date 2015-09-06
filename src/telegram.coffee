@@ -77,23 +77,29 @@ class Telegram extends Adapter
     apiSend: (opts, cb) ->
         @self = @
         message = opts.text
+        chunks = message.match /.{1,4096}/g
 
-        # We rely on lenght since it does not seem that Telegram cares too much about unicode
-        # using more bytes than a normal string.
-        length = message.length
-        limit = 4096
-        parts = (Math.ceil length / limit) - 1
+        @robot.logger.debug "Message length: " + message.length
+        @robot.logger.debug "Message parts: " + chunks.length
 
-        @robot.logger.debug "Message length: " + length
-        @robot.logger.debug "Message parts: " + (parts + 1)
+        send = (opts, cb) =>
+            @robot.logger.debug "Sending message part: " + opts.text.length
 
-        for part in [0..parts]
-            offset = part * limit
-            messagePart = message.substr offset, offset + limit
-            @robot.logger.debug "Sending message part " + part + " length: " + messagePart.length
-            opts.text = messagePart
+            @api.invoke 'sendMessage', opts, (err, message) =>
 
-            @api.invoke 'sendMessage', opts, cb
+                # Recursive call the internal send method until all chunks have
+                # sequentially been delivered.
+                unless chunks.length == 0
+                    opts.text = chunks.shift()
+                    send opts, cb
+
+                # Forward the callback to the original handler
+                cb.apply @, [err, message]
+
+        # Split off the first chunk of message that needs to
+        # be delivered
+        opts.text = chunks.shift()
+        send opts, cb
 
     ###*
     # Send a message to a specific room via the Telegram API

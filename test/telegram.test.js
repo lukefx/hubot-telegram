@@ -65,9 +65,10 @@ describe('Telegram', function() {
 
             // Mock the API object
             telegram.api = {
-                invoke: function (method, opts) {
+                invoke: function (method, opts, cb) {
                     assert.equal(opts.text.length, 4096);
                     called++;
+                    cb.apply(this, [null, {}]);
                 }
             };
 
@@ -84,10 +85,11 @@ describe('Telegram', function() {
 
             // Mock the API object
             telegram.api = {
-                invoke: function (method, opts) {
+                invoke: function (method, opts, cb) {
                     var offset = called * 4096;
                     assert.equal(opts.text.length, message.substr(offset, offset + 4096).length);
                     called++;
+                    cb.apply(this, [null, {}]);
                 }
             };
 
