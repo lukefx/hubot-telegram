@@ -87,7 +87,37 @@ describe('Telegram', function() {
             telegram.api = {
                 invoke: function (method, opts, cb) {
                     var offset = called * 4096;
-                    assert.equal(opts.text.length, message.substr(offset, offset + 4096).length);
+                    assert.equal(opts.text.length, message.substring(offset, offset + 4096).length);
+                    called++;
+                    cb.apply(this, [null, {}]);
+                }
+            };
+
+            telegram.send({ room: 1 }, message);
+            assert.equal(called, 2);
+        });
+
+        it('should not split messages on new line characters', function () {
+
+            var called = 0;
+
+            var message = "";
+            for (var i = 0; i < 1000; i++) message += 'a';
+            message += '\n';
+            for (var i = 0; i < 1000; i++) message += 'b';
+            message += '\n';
+            for (var i = 0; i < 1000; i++) message += 'c';
+            message += '\n';
+            for (var i = 0; i < 1000; i++) message += 'd';
+            message += '\n';
+            for (var i = 0; i < 1000; i++) message += 'e';
+            message += '\n';
+
+            // Mock the API object
+            telegram.api = {
+                invoke: function (method, opts, cb) {
+                    var offset = called * 4096;
+                    assert.equal(opts.text.length, message.substring(offset, offset + 4096).length);
                     called++;
                     cb.apply(this, [null, {}]);
                 }

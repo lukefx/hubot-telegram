@@ -76,30 +76,25 @@ class Telegram extends Adapter
     ###
     apiSend: (opts, cb) ->
         @self = @
-        message = opts.text
-        chunks = message.match /.{1,4096}/g
+        chunks = opts.text.match /[^]{1,4096}/g
 
-        @robot.logger.debug "Message length: " + message.length
+        @robot.logger.debug "Message length: " + opts.text.length
         @robot.logger.debug "Message parts: " + chunks.length
 
-        send = (opts, cb) =>
-            @robot.logger.debug "Sending message part: " + opts.text.length
+        # Chunk message delivery when required
+        send = (cb) =>
+            unless chunks.length == 0
+                current = chunks.shift()
+                opts.text = current
 
-            @api.invoke 'sendMessage', opts, (err, message) =>
+                @api.invoke 'sendMessage', opts, (err, message) =>
+                    # Forward the callback to the original handler
+                    cb.apply @, [err, message]
 
-                # Recursive call the internal send method until all chunks have
-                # sequentially been delivered.
-                unless chunks.length == 0
-                    opts.text = chunks.shift()
-                    send opts, cb
+                    send cb
 
-                # Forward the callback to the original handler
-                cb.apply @, [err, message]
-
-        # Split off the first chunk of message that needs to
-        # be delivered
-        opts.text = chunks.shift()
-        send opts, cb
+        # Start the recursive chunking cycle
+        send cb
 
     ###*
     # Send a message to a specific room via the Telegram API
