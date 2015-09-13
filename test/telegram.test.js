@@ -54,6 +54,38 @@ describe('Telegram', function() {
         });
     });
 
+    describe("#createUser()", function () {
+
+        it("should use the new user object if the first_name or last_name changed", function () {
+
+            telegram.robot.brain.data = { users: [] };
+
+            var original = {
+                id: 1234,
+                first_name: "Firstname",
+                last_name: "Surname",
+                username: "username"
+            };
+
+            telegram.robot.brain.userForId = function () {
+                return original;
+            };
+
+            var user = {
+                id: 1234,
+                first_name: "Updated",
+                last_name: "Surname",
+                username: "username"
+            };
+
+            var result = telegram.createUser(original, 1);
+            assert.equal(original.first_name, result.first_name);
+
+            var result = telegram.createUser(user, 1);
+            assert.equal(user.first_name, result.first_name);
+        });
+    });
+
     describe("#send()", function () {
 
         it('should not split messages below or equal to 4096 characters', function () {
@@ -126,6 +158,5 @@ describe('Telegram', function() {
             telegram.send({ room: 1 }, message);
             assert.equal(called, 2);
         });
-
     });
 });
