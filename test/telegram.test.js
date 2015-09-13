@@ -85,4 +85,78 @@ describe('Telegram', function() {
             assert.equal(user.first_name, result.first_name);
         });
     });
+
+    describe("#send()", function () {
+
+        it('should not split messages below or equal to 4096 characters', function () {
+
+            var called = 0;
+
+            var message = "";
+            for (var i = 0; i < 4096; i++) message += 'a';
+
+            // Mock the API object
+            telegram.api = {
+                invoke: function (method, opts, cb) {
+                    assert.equal(opts.text.length, 4096);
+                    called++;
+                    cb.apply(this, [null, {}]);
+                }
+            };
+
+            telegram.send({ room: 1 }, message);
+            assert.equal(called, 1);
+        });
+
+        it('should split messages when they are above 4096 characters', function () {
+
+            var called = 0;
+
+            var message = "";
+            for (var i = 0; i < 5000; i++) message += 'a';
+
+            // Mock the API object
+            telegram.api = {
+                invoke: function (method, opts, cb) {
+                    var offset = called * 4096;
+                    assert.equal(opts.text.length, message.substring(offset, offset + 4096).length);
+                    called++;
+                    cb.apply(this, [null, {}]);
+                }
+            };
+
+            telegram.send({ room: 1 }, message);
+            assert.equal(called, 2);
+        });
+
+        it('should not split messages on new line characters', function () {
+
+            var called = 0;
+
+            var message = "";
+            for (var i = 0; i < 1000; i++) message += 'a';
+            message += '\n';
+            for (var i = 0; i < 1000; i++) message += 'b';
+            message += '\n';
+            for (var i = 0; i < 1000; i++) message += 'c';
+            message += '\n';
+            for (var i = 0; i < 1000; i++) message += 'd';
+            message += '\n';
+            for (var i = 0; i < 1000; i++) message += 'e';
+            message += '\n';
+
+            // Mock the API object
+            telegram.api = {
+                invoke: function (method, opts, cb) {
+                    var offset = called * 4096;
+                    assert.equal(opts.text.length, message.substring(offset, offset + 4096).length);
+                    called++;
+                    cb.apply(this, [null, {}]);
+                }
+            };
+
+            telegram.send({ room: 1 }, message);
+            assert.equal(called, 2);
+        });
+    });
 });

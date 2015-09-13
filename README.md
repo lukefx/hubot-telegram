@@ -49,6 +49,8 @@ module.exports = function (robot) {
 
 ```
 
+**Note:** An example script of how to use this is located in the `example/` folder
+
 ## Contributors
 
 * Luke Simone - [https://github.com/lukefx](https://github.com/lukefx)
