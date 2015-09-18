@@ -84,6 +84,32 @@ describe('Telegram', function() {
             var result = telegram.createUser(user, 1);
             assert.equal(user.first_name, result.first_name);
         });
+
+        it("should use the new user object if the username changed", function () {
+
+            telegram.robot.brain.data = { users: [] };
+
+            var original = {
+                id: 1234,
+                first_name: "Firstname",
+                last_name: "Surname",
+                username: "old"
+            };
+
+            telegram.robot.brain.userForId = function () {
+                return original;
+            };
+
+            var user = {
+                id: 1234,
+                first_name: "Firstname",
+                last_name: "Surname",
+                username: "username"
+            };
+
+            var result = telegram.createUser(user, 1);
+            assert.equal(user.username, result.username);
+        });
     });
 
     describe("#send()", function () {
