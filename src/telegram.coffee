@@ -10,6 +10,7 @@ class Telegram extends Adapter
         @token      = process.env['TELEGRAM_TOKEN']
         @webhook    = process.env['TELEGRAM_WEBHOOK']
         @interval   = process.env['TELEGRAM_INTERVAL'] || 2000
+        @privacy    = process.env['TELEGRAM_PRIVACY'] || true
         @offset     = 0
         @api        = new telegrambot(@token)
 
@@ -41,7 +42,8 @@ class Telegram extends Adapter
     ###
     cleanMessageText: (text, chat_id) ->
         # If we are running in privacy mode, strip out the stuff we don't need.
-        text = text.replace(/^\//g, '').trim()
+        if (@privacy)
+            text = text.replace(/^\//g, '').trim()
 
         # If it is a private chat, automatically prepend the bot name if it does not exist already.
         if (chat_id > 0)

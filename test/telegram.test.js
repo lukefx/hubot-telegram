@@ -6,6 +6,24 @@ describe('Telegram', function() {
 
     describe('#cleanMessageText()', function () {
 
+        it('privacy mode disabled: should not remove leading characters', function () {
+            telegram.privacy = false;
+
+            var input = '/ship it'
+            var text = telegram.cleanMessageText(input, 0);
+            assert.equal(input, text);
+
+            telegram.privacy = true;
+        });
+
+        it('privacy mode enabled: should remove leading characters', function () {
+            telegram.privacy = true;
+
+            var input = '/ship it'
+            var text = telegram.cleanMessageText(input, 0);
+            assert.equal(input.substr(1), text);
+        });
+
         it('all chat: should remove any leading / characters from commands', function () {
 
             var input = '/ship it';

@@ -28,6 +28,10 @@ You can specify a [webhook](https://core.telegram.org/bots/api#setwebhook) URL w
 
 You can specify the interval (in milliseconds) in which the adapter will poll Telegram for updates. This option only applies if you are not using a [webhook](https://core.telegram.org/bots/api#setwebhook).
 
+**TELEGRAM_PRIVACY** (optional)
+
+When you turn off privacy mode, you should mark this variable as false. With privacy mode disabled, all messages will be processed and any leading slashes will be stripped. If you mark this variable as disabled, the messages will be processed "as is" and any slashes will be kept. This is useful if you want to run a bot that relies heavily on `head` functionality.
+
 ## Telegram Specific Functionality (ie. Stickers, Images)
 
 If you want to create a script that relies on specific Telegram functionality that is not available to Hubot normall, you can do so by emitting the `telegram:invoke` event in your script:
