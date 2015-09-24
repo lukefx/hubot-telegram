@@ -75,10 +75,12 @@ class Telegram extends Adapter
         opts.name = opts.username
         opts.room = chat_id
         result = @robot.brain.userForId user.id, opts
+        current = result.first_name + result.last_name + result.username
+        update = user.first_name + user.last_name + user.username
 
         # Check for any changes, if the first or lastname updated...we will
         # user the new user object instead of the one from the brain
-        if result.first_name != user.first_name or result.last_name != user.last_name
+        if current != update
             @robot.brain.data.users[user.id] = user
             @robot.logger.info "User " + user.id + " regenerated. Persisting new user object."
             return user
