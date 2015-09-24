@@ -10,7 +10,7 @@ class Telegram extends Adapter
         @token      = process.env['TELEGRAM_TOKEN']
         @webhook    = process.env['TELEGRAM_WEBHOOK']
         @interval   = process.env['TELEGRAM_INTERVAL'] || 2000
-        @privacy    = if process.env.hasOwnProperty('TELEGRAM_PRIVACY') then process.env['TELEGRAM_PRIVACY'] else true
+        @privacy    = if process.env.hasOwnProperty('TELEGRAM_PRIVACY') then process.env['TELEGRAM_PRIVACY'] > 0 else true
         @offset     = 0
         @api        = new telegrambot(@token)
 

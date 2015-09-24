@@ -30,6 +30,8 @@ You can specify the interval (in milliseconds) in which the adapter will poll Te
 
 **TELEGRAM_PRIVACY** (optional)
 
+VALUES: 0 or 1
+
 When you turn off privacy mode, you should mark this variable as false. With privacy mode disabled, all messages will be processed and any leading slashes will be stripped. If you mark this variable as disabled, the messages will be processed "as is" and any slashes will be kept. This is useful if you want to run a bot that relies heavily on `head` functionality.
 
 ## Telegram Specific Functionality (ie. Stickers, Images)
