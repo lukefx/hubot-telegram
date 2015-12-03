@@ -12,6 +12,7 @@ class Telegram extends Adapter
         @interval   = process.env['TELEGRAM_INTERVAL'] || 2000
         @offset     = 0
         @api        = new telegrambot(@token)
+        @markdown   = false
 
         @robot.logger.info "Telegram Adapter Bot " + @token + " Loaded..."
 
@@ -73,12 +74,10 @@ class Telegram extends Adapter
         opts.name = opts.username
         opts.room = chat_id
         result = @robot.brain.userForId user.id, opts
-        current = result.first_name + result.last_name + result.username
-        update = user.first_name + user.last_name + user.username
 
         # Check for any changes, if the first or lastname updated...we will
         # user the new user object instead of the one from the brain
-        if current != update
+        if result.first_name != user.first_name or result.last_name != user.last_name
             @robot.brain.data.users[user.id] = user
             @robot.logger.info "User " + user.id + " regenerated. Persisting new user object."
             return user
@@ -116,7 +115,12 @@ class Telegram extends Adapter
     send: (envelope, strings...) ->
         self = @
 
-        @apiSend { chat_id: envelope.room, text: strings.join() }, (err, message) =>
+        data = { chat_id: envelope.room, text: strings.join(', ') }
+
+        if (@markdown)
+            data.parse_mode = 'Markdown'
+
+        @apiSend data, (err, message) =>
             if (err)
                 self.emit 'error', err
             else
@@ -129,7 +133,12 @@ class Telegram extends Adapter
     reply: (envelope, strings...) ->
         self = @
 
-        @apiSend { chat_id: envelope.room, text: strings.join(), reply_to_message_id: envelope.message.id }, (err, message) =>
+        data = { chat_id: envelope.room, text: strings.join(', '), reply_to_message_id: envelope.message.id }
+
+        if (@markdown)
+            data.parse_mode = 'Markdown'
+
+        @apiSend data, (err, message) =>
             if (err)
                 self.emit 'error', err
             else
