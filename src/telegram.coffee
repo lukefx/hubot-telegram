@@ -157,19 +157,19 @@ class Telegram extends Adapter
         else if message.new_chat_participant
             user = @createUser message.new_chat_participant, message.chat.id
             @robot.logger.info "User " + user.id + " joined chat " + message.chat.id
-            message = new EnterMessage user, null, message.message_id
+            @receive new EnterMessage user, null, message.message_id
 
         # Exit event
         else if message.left_chat_participant
             user = @createUser message.left_chat_participant, message.chat.id
             @robot.logger.info "User " + user.id + " left chat " + message.chat.id
-            message = new LeaveMessage user, null, message.message_id
+            @receive new LeaveMessage user, null, message.message_id
 
         # Chat topic event
         else if message.new_chat_title
             user = @createUser message.from, message.chat.id
             @robot.logger.info "User " + user.id + " changed chat " + message.chat.id + " title: " + message.new_chat_title
-            message = new TopicMessage user, message.new_chat_title, message.message_id
+            @receive new TopicMessage user, message.new_chat_title, message.message_id
 
         # Increment the current offset
         @offset = update.update_id
