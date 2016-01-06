@@ -144,8 +144,13 @@ class Telegram extends Adapter
         message = update.message
         @robot.logger.info "Receiving message_id: " + message.message_id
 
+        # check if is an inlineQuery
+        if message.substring(0, 1) == "@"
+          @robot.logger.info "Incoming inline query"
+          @emit "inlineQuery", update
+
         # Text event
-        if (message.text)
+        if message.text
             text = @cleanMessageText message.text, message.chat.id
 
             @robot.logger.debug "Received message: " + message.from.username + " said '" + text + "'"
