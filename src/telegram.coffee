@@ -144,11 +144,6 @@ class Telegram extends Adapter
         message = update.message
         @robot.logger.info "Receiving message_id: " + message.message_id
 
-        # check if is an inlineQuery
-        if message.substring(0, 1) == "@"
-          @robot.logger.info "Incoming inline query"
-          @emit "inlineQuery", update
-
         # Text event
         if message.text
             text = @cleanMessageText message.text, message.chat.id
@@ -210,7 +205,13 @@ class Telegram extends Adapter
                         self.emit 'error', err
                     else
                         for msg in result
+                          # Check for message
+                          if msg.message?
                             self.handleUpdate msg
+                          else
+                            self.robot.emit "inlineQuery", msg
+                            self.robot.logger.info "inlineQuery"
+
 
             , @interval
 
