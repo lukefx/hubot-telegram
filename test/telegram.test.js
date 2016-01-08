@@ -6,15 +6,15 @@ describe('Telegram', function() {
 
     describe('#cleanMessageText()', function () {
 
-        it('all chat: should remove any leading / characters from commands', function () {
+        it('private chat: should remove any leading / characters from commands', function () {
 
             var input = '/ship it';
-            var text = telegram.cleanMessageText(input, 0);
-            assert.equal('ship it', text);
+            var text = telegram.cleanMessageText(input, 1);
+            assert.equal(/\/ship it/.test(text), false);
 
             var input = '/ship it'
-            var text = telegram.cleanMessageText(input, 0);
-            assert.notEqual(text.substr(0, 1), '/');
+            var text = telegram.cleanMessageText(input, 1);
+            assert.notEqual(text.split(' ')[1].substr(0, 1), '/');
         });
 
         // eg. ship it => BotName ship it
