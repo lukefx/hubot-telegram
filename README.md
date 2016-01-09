@@ -51,6 +51,20 @@ module.exports = function (robot) {
 
 **Note:** An example script of how to use this is located in the `example/` folder
 
+If you want to supplement your message delivery with extra features such as **markdown** syntax or **keyboard** replies, you can specify these settings on the `res.envelope` variable in your plugin.
+
+``` nodejs
+
+robot.respond(/(.*)/i, function (res) {
+    res.envelope.telegram = { reply_markup: { keyboard: [["test"]] }}
+
+    res.reply("Select the option from the keyboard specified.");
+};
+
+```
+
+**Note:** Markdown will automatically be parsed if the supported markdown characters are included. You can override this by specifying the `parse_markdown` value in the `envelope.telegram` key.
+
 ## Contributors
 
 * Luke Simone - [https://github.com/lukefx](https://github.com/lukefx)
