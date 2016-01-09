@@ -40,14 +40,16 @@ class Telegram extends Adapter
     # @return string
     ###
     cleanMessageText: (text, chat_id) ->
-        # If we are running in privacy mode, strip out the stuff we don't need.
-        text = text.replace(/^\//g, '').trim()
-
         # If it is a private chat, automatically prepend the bot name if it does not exist already.
         if (chat_id > 0)
+            # Strip out the stuff we don't need.
+            text = text.replace(/^\//g, '').trim()
+
             text = text.replace(new RegExp('^@?' + @robot.name.toLowerCase(), 'gi'), '');
             text = text.replace(new RegExp('^@?' + @robot.alias.toLowerCase(), 'gi'), '') if @robot.alias
             text = @robot.name + ' ' + text.trim()
+        else
+            text = text.trim()
 
         return text
 
