@@ -89,14 +89,16 @@ class Telegram extends Adapter
     # Create a new user in relation with a chat_id
     #
     # @param object user
-    # @param int    chat_id
+    # @param object chat
     #
     # @return object
     ###
-    createUser: (user, chat_id) ->
+    createUser: (user, chat) ->
         opts = user
         opts.name = opts.username
-        opts.room = chat_id
+        opts.room = chat.id
+        opts.telegram_chat = chat
+
         result = @robot.brain.userForId user.id, opts
         current = result.first_name + result.last_name + result.username
         update = user.first_name + user.last_name + user.username
@@ -179,24 +181,24 @@ class Telegram extends Adapter
 
             @robot.logger.debug "Received message: " + message.from.username + " said '" + text + "'"
 
-            user = @createUser message.from, message.chat.id
+            user = @createUser message.from, message.chat
             @receive new TextMessage user, text, message.message_id
 
         # Join event
         else if message.new_chat_participant
-            user = @createUser message.new_chat_participant, message.chat.id
+            user = @createUser message.new_chat_participant, message.chat
             @robot.logger.info "User " + user.id + " joined chat " + message.chat.id
             @receive new EnterMessage user, null, message.message_id
 
         # Exit event
         else if message.left_chat_participant
-            user = @createUser message.left_chat_participant, message.chat.id
+            user = @createUser message.left_chat_participant, message.chat
             @robot.logger.info "User " + user.id + " left chat " + message.chat.id
             @receive new LeaveMessage user, null, message.message_id
 
         # Chat topic event
         else if message.new_chat_title
-            user = @createUser message.from, message.chat.id
+            user = @createUser message.from, message.chat
             @robot.logger.info "User " + user.id + " changed chat " + message.chat.id + " title: " + message.new_chat_title
             @receive new TopicMessage user, message.new_chat_title, message.message_id
 
