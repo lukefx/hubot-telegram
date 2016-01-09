@@ -60,23 +60,23 @@ describe('Telegram', function() {
 
             var message = { text: "normal" }
             message = telegram.applyExtraOptions(message);
-            assert(typeof message.parse_markdown === 'undefined');
+            assert(typeof message.parse_mode === 'undefined');
 
             message = { text: "markdown *message*" }
             message = telegram.applyExtraOptions(message);
-            assert.equal(message.parse_markdown, "Markdown");
+            assert.equal(message.parse_mode, "Markdown");
 
             message = { text: "markdown _message_" }
             message = telegram.applyExtraOptions(message);
-            assert.equal(message.parse_markdown, "Markdown");
+            assert.equal(message.parse_mode, "Markdown");
 
             message = { text: "markdown `message`" }
             message = telegram.applyExtraOptions(message);
-            assert.equal(message.parse_markdown, "Markdown");
+            assert.equal(message.parse_mode, "Markdown");
 
             message = { text: "markdown [message](http://link.com)" }
             message = telegram.applyExtraOptions(message);
-            assert.equal(message.parse_markdown, "Markdown");
+            assert.equal(message.parse_mode, "Markdown");
 
         });
 
