@@ -54,6 +54,55 @@ describe('Telegram', function() {
         });
     });
 
+    describe("#applyExtraOptions()", function () {
+
+        it("should automatically add the markdown option if the text contains markdown characters", function () {
+
+            var message = { text: "normal" }
+            message = telegram.applyExtraOptions(message);
+            assert(typeof message.parse_mode === 'undefined');
+
+            message = { text: "markdown *message*" }
+            message = telegram.applyExtraOptions(message);
+            assert.equal(message.parse_mode, "Markdown");
+
+            message = { text: "markdown _message_" }
+            message = telegram.applyExtraOptions(message);
+            assert.equal(message.parse_mode, "Markdown");
+
+            message = { text: "markdown `message`" }
+            message = telegram.applyExtraOptions(message);
+            assert.equal(message.parse_mode, "Markdown");
+
+            message = { text: "markdown [message](http://link.com)" }
+            message = telegram.applyExtraOptions(message);
+            assert.equal(message.parse_mode, "Markdown");
+
+        });
+
+        it("should apply any extra options passed the message envelope", function () {
+
+            var message = { text: "test" }
+            var extra = { extra: true, nested: { extra: true } };
+            message = telegram.applyExtraOptions(message, extra);
+
+            assert.equal(extra.extra, message.extra);
+            assert.equal(extra.nested.extra, message.nested.extra);
+
+            // Mock the API object
+            telegram.api = {
+                invoke: function (method, opts, cb) {
+                    assert.equal(extra.extra, opts.extra);
+                    assert.equal(extra.nested.extra, opts.nested.extra);
+                    cb.apply(this, [null, {}]);
+                }
+            };
+
+            telegram.send({ telegram: extra }, "text");
+        });
+
+    });
+
     describe("#createUser()", function () {
 
         it("should use the new user object if the first_name or last_name changed", function () {

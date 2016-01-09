@@ -54,6 +54,29 @@ class Telegram extends Adapter
         return text
 
     ###*
+    # Add extra options to the message packet before deliver. The extra options
+    # will be pulled from the message envelope
+    #
+    # @param object message
+    # @param object extra
+    #
+    # @return object
+    ###
+    applyExtraOptions: (message, extra) ->
+
+        text = message.text
+        autoMarkdown = /\*.+\*/.test(text) or /_.+_/.test(text) or /\[.+\]\(.+\)/.test(text) or /`.+`/.test(text)
+
+        if autoMarkdown
+            message.parse_mode = 'Markdown'
+
+        if extra?
+            for key, value of extra
+                message[key] = value
+
+        return message
+
+    ###*
     # Get the last offset + 1, this will allow
     # the Telegram API to only return new relevant messages
     #
@@ -118,15 +141,7 @@ class Telegram extends Adapter
     send: (envelope, strings...) ->
         self = @
         text = strings.join()
-        data = { chat_id: envelope.room, text: text }
-
-        markdown = /\*.+\*/.test(text) or
-                    /_.+_/.test(text) or
-                    /\[.+\]\(.+\)/.test(text) or
-                    /`.+`/.test(text)
-
-        if markdown
-          data.parse_mode = 'Markdown'
+        data = @applyExtraOptions({ chat_id: envelope.room, text: text }, envelope.telegram);
 
         @apiSend data, (err, message) =>
             if (err)
@@ -141,21 +156,13 @@ class Telegram extends Adapter
     reply: (envelope, strings...) ->
         self = @
         text = strings.join()
-        data = { chat_id: envelope.room, text: text, reply_to_message_id: envelope.message.id }
-
-        markdown = /\*.+\*/.test(text) or
-                   /_.+_/.test(text) or
-                   /\[.+\]\(.+\)/.test(text) or
-                   /`.+`/.test(text)
-
-        if markdown
-          data.parse_mode = 'Markdown'
+        data = @applyExtraOptions({ chat_id: envelope.room, text: text, reply_to_message_id: envelope.message.id }, envelope.telegram);
 
         @apiSend data, (err, message) =>
             if (err)
                 self.emit 'error', err
             else
-                self.robot.logger.info "Reply message to room/message: " + envelope.room + "/" + envelope.id
+                self.robot.logger.info "Reply message to room/message: " + envelope.room + "/" + envelope.message.id
 
     ###*
     # "Private" method to handle a new update received via a webhook
