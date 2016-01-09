@@ -63,7 +63,7 @@ robot.respond(/(.*)/i, function (res) {
 
 ```
 
-**Note:** Markdown will automatically be parsed if the supported markdown characters are included. You can override this by specifying the `parse_markdown` value in the `envelope.telegram` key.
+**Note:** Markdown will automatically be parsed if the supported markdown characters are included. You can override this by specifying the `parse_mode` value in the `envelope.telegram` key.
 
 ## Contributors
 

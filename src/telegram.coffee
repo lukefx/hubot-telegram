@@ -68,7 +68,7 @@ class Telegram extends Adapter
         autoMarkdown = /\*.+\*/.test(text) or /_.+_/.test(text) or /\[.+\]\(.+\)/.test(text) or /`.+`/.test(text)
 
         if autoMarkdown
-            message.parse_markdown = 'Markdown'
+            message.parse_mode = 'Markdown'
 
         if extra?
             for key, value of extra
@@ -162,7 +162,7 @@ class Telegram extends Adapter
             if (err)
                 self.emit 'error', err
             else
-                self.robot.logger.info "Reply message to room/message: " + envelope.room + "/" + envelope.id
+                self.robot.logger.info "Reply message to room/message: " + envelope.room + "/" + envelope.message.id
 
     ###*
     # "Private" method to handle a new update received via a webhook
