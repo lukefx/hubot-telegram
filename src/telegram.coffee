@@ -117,8 +117,18 @@ class Telegram extends Adapter
     ###
     send: (envelope, strings...) ->
         self = @
+        text = strings.join()
+        data = { chat_id: envelope.room, text: text }
 
-        @apiSend { chat_id: envelope.room, text: strings.join() }, (err, message) =>
+        markdown = /\*.+\*/.test(text) or
+                    /_.+_/.test(text) or
+                    /\[.+\]\(.+\)/.test(text) or
+                    /`.+`/.test(text)
+
+        if markdown
+          data.parse_mode = 'Markdown'
+
+        @apiSend data, (err, message) =>
             if (err)
                 self.emit 'error', err
             else
@@ -130,8 +140,18 @@ class Telegram extends Adapter
     ###
     reply: (envelope, strings...) ->
         self = @
+        text = strings.join()
+        data = { chat_id: envelope.room, text: text, reply_to_message_id: envelope.message.id }
 
-        @apiSend { chat_id: envelope.room, text: strings.join(), reply_to_message_id: envelope.message.id }, (err, message) =>
+        markdown = /\*.+\*/.test(text) or
+                   /_.+_/.test(text) or
+                   /\[.+\]\(.+\)/.test(text) or
+                   /`.+`/.test(text)
+
+        if markdown
+          data.parse_mode = 'Markdown'
+
+        @apiSend data, (err, message) =>
             if (err)
                 self.emit 'error', err
             else
