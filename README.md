@@ -22,7 +22,7 @@ The token that the [BotFather](https://core.telegram.org/bots#botfather) gives y
 
 **TELEGRAM_WEBHOOK** (optional)
 
-You can specify a [webhook](https://core.telegram.org/bots/api#setwebhook) URL which the adapter will register with Telegram. This URL will receive updates from Telegram. The adapter automatically registers an endpoint with Hubot at http://your-hobot-host/hubot/telegram/receive.
+You can specify a [webhook](https://core.telegram.org/bots/api#setwebhook) URL. The adapter will register TELEGRAM_WEBHOOK/TELEGRAM_TOKEN with Telegram and listen there.
 
 **TELEGRAM_INTERVAL** (optional)
 
