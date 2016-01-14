@@ -231,6 +231,11 @@ class Telegram extends Adapter
                 res.send 'OK'
 
         else
+	    # Clear Webhook
+            @api.invoke 'setWebHook', { url: null }, (err, result) ->
+                if (err)
+                    self.emit 'error', err
+
             setInterval ->
 
                 self.api.invoke 'getUpdates', { offset: self.getLastOffset(), limit: 10 }, (err, result) ->
