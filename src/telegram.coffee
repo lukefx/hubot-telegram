@@ -232,7 +232,7 @@ class Telegram extends Adapter
 
         else
 	    # Clear Webhook
-            @api.invoke 'setWebHook', { url: null }, (err, result) ->
+            @api.invoke 'setWebHook', { url: '' }, (err, result) ->
                 if (err)
                     self.emit 'error', err
 
