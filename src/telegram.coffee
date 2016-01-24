@@ -217,17 +217,25 @@ class Telegram extends Adapter
 
         if @webhook
 
-            @api.invoke 'setWebHook', { url: @webhook }, (err, result) ->
+            endpoint = @webhook + '/' + @token
+            @robot.logger.debug 'Listening on ' + endpoint
+
+            @api.invoke 'setWebHook', { url: endpoint }, (err, result) ->
                 if (err)
                     self.emit 'error', err
 
-            @robot.router.post "/hubot/telegram/receive", (req, res) =>
+            @robot.router.post "/" + @token, (req, res) =>
                 if req.body.message
                     self.handleUpdate req.body
 
                 res.send 'OK'
 
         else
+	    # Clear Webhook
+            @api.invoke 'setWebHook', { url: '' }, (err, result) ->
+                if (err)
+                    self.emit 'error', err
+
             setInterval ->
 
                 self.api.invoke 'getUpdates', { offset: self.getLastOffset(), limit: 10 }, (err, result) ->
