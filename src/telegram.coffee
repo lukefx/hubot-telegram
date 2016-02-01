@@ -1,4 +1,4 @@
-{Robot, Adapter, TextMessage, EnterMessage, LeaveMessage, TopicMessage, User} = require 'hubot'
+{Robot, Adapter, TextMessage, EnterMessage, LeaveMessage, TopicMessage, CatchAllMessage, User} = require 'hubot'
 telegrambot = require 'telegrambot'
 
 class Telegram extends Adapter
@@ -201,6 +201,10 @@ class Telegram extends Adapter
             user = @createUser message.from, message.chat
             @robot.logger.info "User " + user.id + " changed chat " + message.chat.id + " title: " + message.new_chat_title
             @receive new TopicMessage user, message.new_chat_title, message.message_id
+
+        else
+            message.user = @createUser message.from, message.chat
+            @receive new CatchAllMessage message
 
         # Increment the current offset
         @offset = update.update_id
