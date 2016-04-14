@@ -244,9 +244,7 @@ class Telegram extends Adapter
                     if (err)
                         self.emit 'error', err
                     else
-                        for msg in result
-                            # Increment the current offset
-                            self.offset = msg.update_id
+                        self.offset = result[result.length-1].update_id if result.length
 
                         for msg in result
                             self.handleUpdate msg
