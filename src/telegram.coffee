@@ -171,6 +171,8 @@ class Telegram extends Adapter
     # or poll update.
     ###
     handleUpdate: (update) ->
+    
+        @robot.logger.debug update
 
         message = update.message
         @robot.logger.info "Receiving message_id: " + message.message_id
