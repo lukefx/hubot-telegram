@@ -206,9 +206,6 @@ class Telegram extends Adapter
             message.user = @createUser message.from, message.chat
             @receive new CatchAllMessage message
 
-        # Increment the current offset
-        @offset = update.update_id
-
     run: ->
         self = @
 
@@ -247,6 +244,8 @@ class Telegram extends Adapter
                     if (err)
                         self.emit 'error', err
                     else
+                        self.offset = result[result.length-1].update_id if result.length
+
                         for msg in result
                             self.handleUpdate msg
 
