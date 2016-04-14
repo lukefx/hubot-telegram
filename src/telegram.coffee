@@ -72,7 +72,7 @@ class Telegram extends Adapter
 
         if extra?
             for key, value of extra
-                message[key] = value
+                message[key] = "" + value
 
         return message
 
