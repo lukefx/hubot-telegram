@@ -240,6 +240,8 @@ class Telegram extends Adapter
                     self.emit 'error', err
 
             setInterval ->
+                
+                self.robot.logger.debug 'Calling getUpdates with offset ' + self.getLastOffset()
 
                 self.api.invoke 'getUpdates', { offset: self.getLastOffset(), limit: 10 }, (err, result) ->
 
