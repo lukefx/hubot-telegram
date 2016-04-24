@@ -171,7 +171,7 @@ class Telegram extends Adapter
     # or poll update.
     ###
     handleUpdate: (update) ->
-    
+
         @robot.logger.debug update
 
         message = update.message
@@ -187,13 +187,13 @@ class Telegram extends Adapter
             @receive new TextMessage user, text, message.message_id
 
         # Join event
-        else if message.new_chat_participant
+        else if message.new_chat_member
             user = @createUser message.new_chat_participant, message.chat
             @robot.logger.info "User " + user.id + " joined chat " + message.chat.id
             @receive new EnterMessage user, null, message.message_id
 
         # Exit event
-        else if message.left_chat_participant
+        else if message.left_chat_member
             user = @createUser message.left_chat_participant, message.chat
             @robot.logger.info "User " + user.id + " left chat " + message.chat.id
             @receive new LeaveMessage user, null, message.message_id
