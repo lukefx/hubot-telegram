@@ -70,9 +70,23 @@ class Telegram extends Adapter
         if autoMarkdown
             message.parse_mode = 'Markdown'
 
+        toString = (object) ->
+
+            result = {}
+
+            try
+                for key in Object.keys(object)
+                    result[key] = toString(object[key])
+            catch e
+                result = "" + object;
+
+            return result
+
         if extra?
+            extra = toString(extra)
+
             for key, value of extra
-                message[key] = "" + value
+                message[key] = value
 
         return message
 
@@ -171,7 +185,7 @@ class Telegram extends Adapter
     # or poll update.
     ###
     handleUpdate: (update) ->
-    
+
         @robot.logger.debug update
 
         message = update.message
