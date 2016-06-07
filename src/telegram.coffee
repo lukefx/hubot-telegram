@@ -174,7 +174,7 @@ class Telegram extends Adapter
     
         @robot.logger.debug update
 
-        message = update.message
+        message = update.message || update.edited_message
         @robot.logger.info "Receiving message_id: " + message.message_id
 
         # Text event
