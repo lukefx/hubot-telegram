@@ -6,11 +6,14 @@ var fs = require('fs');
 
 module.exports = function (robot) {
 
-    robot.hear(/send photo/i, function (res) {
+  robot.hear(/send photo/i, function (res) {
 
-        robot.emit('telegram:invoke', 'sendPhoto', { chat_id: res.message.room, photo: fs.createReadStream(__dirname + '/image.png') }, function (error, response) {
-            console.log(error);
-            console.log(response);
-        });
+    robot.emit('telegram:invoke', 'sendPhoto', {
+      chat_id: res.message.room,
+      photo: fs.createReadStream(__dirname + '/image.png')
+    }, function (error, response) {
+      console.log(error);
+      console.log(response);
     });
+  });
 };
