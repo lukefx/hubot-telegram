@@ -201,19 +201,19 @@ class Telegram extends Adapter
       user = @createUser message.from, message.chat
       @receive new TextMessage user, text, message.message_id
 
-# Join event
+    # Join event
     else if message.new_chat_participant
       user = @createUser message.new_chat_participant, message.chat
       @robot.logger.info "User " + user.id + " joined chat " + message.chat.id
       @receive new EnterMessage user, null, message.message_id
 
-# Exit event
+    # Exit event
     else if message.left_chat_participant
       user = @createUser message.left_chat_participant, message.chat
       @robot.logger.info "User " + user.id + " left chat " + message.chat.id
       @receive new LeaveMessage user, null, message.message_id
 
-# Chat topic event
+    # Chat topic event
     else if message.new_chat_title
       user = @createUser message.from, message.chat
       @robot.logger.info "User " + user.id + " changed chat " + message.chat.id + " title: " + message.new_chat_title
