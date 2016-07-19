@@ -83,17 +83,18 @@ describe('Telegram', function() {
         it("should apply any extra options passed the message envelope", function () {
 
             var message = { text: "test" }
-            var extra = { extra: true, nested: { extra: true } };
+            var extra = { extra: true, nested: { extra: true }, nullObject: null };
             message = telegram.applyExtraOptions(message, extra);
 
-            assert.equal(extra.extra, message.extra);
-            assert.equal(extra.nested.extra, message.nested.extra);
+            assert.equal("" + extra.extra, message.extra);
+            assert.equal("" + extra.nested.extra, message.nested.extra);
+            assert.equal("" + extra.nullObject, message.nullObject);
 
             // Mock the API object
             telegram.api = {
                 invoke: function (method, opts, cb) {
-                    assert.equal(extra.extra, opts.extra);
-                    assert.equal(extra.nested.extra, opts.nested.extra);
+                    assert.equal("" + extra.extra, opts.extra);
+                    assert.equal("" + extra.nested.extra, opts.nested.extra);
                     cb.apply(this, [null, {}]);
                 }
             };
