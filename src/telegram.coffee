@@ -46,7 +46,7 @@ class Telegram extends Adapter
       text = text.replace(/^\//g, '').trim()
 
       text = text.replace(new RegExp('^@?' + @robot.name.toLowerCase(), 'gi'), '');
-      text = text.replace(new RegExp('^@?' + @robot.alias.toLowerCase(), 'gi'), '') if @robot.alias
+      text = text.replace(new RegExp('^@?' + @robot.alias.toLowerCase(), 'gi'), '') if @robot.alias != '.'
       text = @robot.name + ' ' + text.trim()
     else
       text = text.trim()
