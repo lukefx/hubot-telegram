@@ -241,15 +241,20 @@ class Telegram extends Adapter
         if (err)
           self.emit 'error', err
 
-      setInterval ->
-        self.api.invoke 'getUpdates', {offset: self.getLastOffset(), limit: 10}, (err, result) ->
-          if (err)
-            self.emit 'error', err
-          else
-            self.offset = result[result.length - 1].update_id if result.length
+      setInterval =>
+        @api.invoke 'getUpdates', {offset: @getLastOffset(), limit: 10}, (err, result) =>
+          if err
+            @emit 'error', err
+            return
 
-            for msg in result
-              self.handleUpdate msg
+          return unless result.length
+
+          offset = result[result.length - 1].update_id
+          return if offset is @offset
+          @offset = offset
+
+          for msg in result
+            @handleUpdate msg
 
       , @interval
 
