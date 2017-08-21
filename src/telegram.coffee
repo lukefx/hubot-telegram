@@ -176,7 +176,7 @@ class Telegram extends Adapter
   handleUpdate: (update) ->
     @robot.logger.debug update
 
-    message = update.message || update.edited_message
+    message = update.message || update.edited_message || update.callback_query
     @robot.logger.info "Receiving message_id: " + message.message_id
 
     # Text event
@@ -187,6 +187,19 @@ class Telegram extends Adapter
 
       user = @createUser message.from, message.chat
       @receive new TextMessage user, text, message.message_id
+    # Callback query
+    else if message.data
+      text = @cleanMessageText message.data, message.message.chat.id
+
+      @robot.logger.debug "Received callback query: " + message.from.username + " said '" + text + "'"
+
+      user = @createUser message.from, message.message.chat
+
+      @api.invoke 'answerCallbackQuery', {callback_query_id: message.id}, (err, result) ->
+        if (err)
+          self.emit 'error', err
+
+      @receive new TextMessage user, text, message.message.message_id
 
     # Join event
     else if message.new_chat_member
