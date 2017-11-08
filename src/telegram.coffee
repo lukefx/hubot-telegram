@@ -10,7 +10,7 @@ class Telegram extends Adapter
     @token = process.env['TELEGRAM_TOKEN']
     @webhook = process.env['TELEGRAM_WEBHOOK']
     @interval = process.env['TELEGRAM_INTERVAL'] || 2000
-    @offset = 0
+    @offsetBrainKey = 'telegram-message-offset'
     @api = new telegrambot(@token)
 
     @robot.logger.info "Telegram Adapter Bot " + @token + " Loaded..."
@@ -82,7 +82,7 @@ class Telegram extends Adapter
   # @return int
   ###
   getLastOffset: ->
-    parseInt(@offset) + 1
+    parseInt(@robot.brain.get(@offsetBrainKey) ? 0) + 1
 
   ###*
   # Create a new user in relation with a chat_id
@@ -241,15 +241,22 @@ class Telegram extends Adapter
         if (err)
           self.emit 'error', err
 
-      setInterval ->
-        self.api.invoke 'getUpdates', {offset: self.getLastOffset(), limit: 10}, (err, result) ->
-          if (err)
-            self.emit 'error', err
-          else
-            self.offset = result[result.length - 1].update_id if result.length
+      setInterval =>
+        @api.invoke 'getUpdates', {offset: @getLastOffset(), limit: 10}, (err, result) =>
+          if err
+            @emit 'error', err
+            return
 
-            for msg in result
-              self.handleUpdate msg
+          return unless result.length
+
+          offset = result[result.length - 1].update_id
+          rememberedOffset = @robot.brain.get(@offsetBrainKey)
+          return if offset is rememberedOffset
+
+          @robot.brain.set(@offsetBrainKey, offset).save()
+
+          for msg in result
+            @handleUpdate msg
 
       , @interval
 
