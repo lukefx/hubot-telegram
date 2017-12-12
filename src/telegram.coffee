@@ -64,7 +64,7 @@ class Telegram extends Adapter
   ###
   applyExtraOptions: (message, extra) ->
     text = message.text
-    autoMarkdown = /\*.+\*/.test(text) or /_.+_/.test(text) or /\[.+\]\(.+\)/.test(text) or /`.+`/.test(text)
+    autoMarkdown = /\*.+\*/.test(text) or /\b_[^_]+_\b/.test(text) or /\[.+\]\(.+\)/.test(text) or /`.+`/.test(text)
 
     if autoMarkdown
       message.parse_mode = 'Markdown'
