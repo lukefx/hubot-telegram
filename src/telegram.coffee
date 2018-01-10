@@ -175,40 +175,49 @@ class Telegram extends Adapter
   ###
   handleUpdate: (update) ->
     @robot.logger.debug update
+    
+    # Converts the callback query to a regular text event 
+    if(update.callback_query)
+      query = update.callback_query
+      @robot.logger.info "Receiving callback query id: " + query.id
+      data = @cleanMessageText query.data, query.chat_instance
+      user = @createUser query.from, query.message.chat
+      @receive new TextMessage user, data, query.id
 
-    message = update.message || update.edited_message
-    @robot.logger.info "Receiving message_id: " + message.message_id
+    else    
+      message = update.message || update.edited_message
+      @robot.logger.info "Receiving message_id: " + message.message_id
 
-    # Text event
-    if (message.text)
-      text = @cleanMessageText message.text, message.chat.id
+      # Text event
+      if (message.text)
+        text = @cleanMessageText message.text, message.chat.id
 
-      @robot.logger.debug "Received message: " + message.from.username + " said '" + text + "'"
+        @robot.logger.debug "Received message: " + message.from.username + " said '" + text + "'"
 
-      user = @createUser message.from, message.chat
-      @receive new TextMessage user, text, message.message_id
+        user = @createUser message.from, message.chat
+        @receive new TextMessage user, text, message.message_id
 
-    # Join event
-    else if message.new_chat_member
-      user = @createUser message.new_chat_member, message.chat
-      @robot.logger.info "User " + user.id + " joined chat " + message.chat.id
-      @receive new EnterMessage user, null, message.message_id
+      # Join event
+      else if message.new_chat_member
+        user = @createUser message.new_chat_member, message.chat
+        @robot.logger.info "User " + user.id + " joined chat " + message.chat.id
+        @receive new EnterMessage user, null, message.message_id
 
-    # Exit event
-    else if message.left_chat_member
-      user = @createUser message.left_chat_member, message.chat
-      @robot.logger.info "User " + user.id + " left chat " + message.chat.id
-      @receive new LeaveMessage user, null, message.message_id
+      # Exit event
+      else if message.left_chat_member
+        user = @createUser message.left_chat_member, message.chat
+        @robot.logger.info "User " + user.id + " left chat " + message.chat.id
+        @receive new LeaveMessage user, null, message.message_id
 
-    # Chat topic event
-    else if message.new_chat_title
-      user = @createUser message.from, message.chat
-      @robot.logger.info "User " + user.id + " changed chat " + message.chat.id + " title: " + message.new_chat_title
-      @receive new TopicMessage user, message.new_chat_title, message.message_id
+      # Chat topic event
+      else if message.new_chat_title
+        user = @createUser message.from, message.chat
+        @robot.logger.info "User " + user.id + " changed chat " + message.chat.id + " title: " + message.new_chat_title
+        @receive new TopicMessage user, message.new_chat_title, message.message_id
 
-    else
-      message.user = @createUser message.from, message.chat
-      @receive new CatchAllMessage message
+      else
+        message.user = @createUser message.from, message.chat
+        @receive new CatchAllMessage message
 
   run: ->
     self = @
