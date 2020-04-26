@@ -2,18 +2,15 @@
 // we don't have to include the Hubot dependency
 // in our tests
 
-// Function that does/return nothing
-var void_func = function () {
-};
-
 module.exports = {
-  name: "TestBot",
-  alias: "TestAliasBot",
+  name: 'TestBot',
+  alias: 'TestAliasBot',
   logger: {
-    info: void_func,
-    warning: void_func,
-    error: void_func,
-    debug: void_func
+    info: jest.fn(),
+    warning: jest.fn(),
+    error: jest.fn(),
+    debug: jest.fn()
   },
-  brain: {}
+  brain: {},
+  listenerMiddleware: jest.fn()
 }
