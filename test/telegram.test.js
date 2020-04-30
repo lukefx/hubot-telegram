@@ -1,48 +1,24 @@
 process.env.TELEGRAM_TOKEN = '1234'
-
-const hubot = require('./hubot.stub')
+const FakeRobot = require('./hubot.stub')
+const hubot = new FakeRobot()
 
 const sendMessage = jest.fn(() => Promise.resolve())
 
-const getUpdates = jest.fn(() =>
-  Promise.resolve({
-    ok: true,
-    result: [
-      {
-        update_id: 12671344,
-        message: {
-          message_id: 30,
-          from: {
-            id: 1,
-            is_bot: false,
-            first_name: 'lukefx',
-            username: '',
-            language_code: 'en'
-          },
-          chat: {
-            id: 1,
-            first_name: '',
-            username: 'lukefx',
-            type: 'private'
-          },
-          date: 1560719493,
-          text: 'hello'
-        }
-      }
-    ]
-  })
-)
-
 jest.mock('node-telegram-bot-api', () => {
   return jest.fn().mockImplementation(() => ({
-    getMe: jest.fn(() => Promise.resolve({ result: { id: 1 } })),
-    sendMessage,
-    getUpdates
+    getMe: jest.fn(() =>
+      Promise.resolve({
+        id: 1,
+        first_name: hubot.name,
+        username: hubot.name
+      })
+    ),
+    sendMessage
   }))
 })
 
-var telegram = require('./../src/telegram').use(hubot)
-var assert = require('assert')
+const telegram = require('./../src/telegram').use(hubot)
+const assert = require('assert')
 
 describe('Telegram', function () {
   describe('#cleanMessageText()', function () {
@@ -155,6 +131,33 @@ describe('Telegram', function () {
       for (var i = 0; i < 4096; i++) message += 'a'
       telegram.send({ room: 1 }, message)
       expect(sendMessage).toHaveBeenCalledTimes(1)
+    })
+  })
+
+  describe('#handleUpdate()', function () {
+    it('should handle updates', function () {
+      telegram.handleUpdate(
+        {
+          message_id: 1,
+          from: {
+            id: 1234567890,
+            first_name: 'John',
+            last_name: 'Doe',
+            username: 'JohnDoe'
+          },
+          chat: {
+            id: 1234567890,
+            first_name: 'John',
+            last_name: 'Doe',
+            username: 'JohnDoe',
+            type: 'private'
+          },
+          date: 1459957719,
+          text: 'hello'
+        },
+        { type: 'text' }
+      )
+      expect(hubot.receive).toHaveBeenCalledTimes(1)
     })
   })
 })

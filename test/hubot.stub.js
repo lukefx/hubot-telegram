@@ -1,16 +1,19 @@
-// Create a basic Hubot stub object so
-// we don't have to include the Hubot dependency
-// in our tests
+const { EventEmitter } = require('events')
 
-module.exports = {
-  name: 'TestBot',
-  alias: 'TestAliasBot',
-  logger: {
-    info: jest.fn(),
-    warning: jest.fn(),
-    error: jest.fn(),
-    debug: jest.fn()
-  },
-  brain: {},
-  listenerMiddleware: jest.fn()
+class FakeRobot extends EventEmitter {
+  constructor () {
+    super()
+    this.name = 'TestBot'
+    this.alias = 'TestAliasBot'
+    this.logger = console
+    this.receive = jest.fn()
+    this.brain = {
+      userForId: jest.fn((id, options) => {
+        return Object.assign({ id }, options)
+      })
+    }
+    this.receiveMiddleware = jest.fn()
+  }
 }
+
+module.exports = FakeRobot

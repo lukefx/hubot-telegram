@@ -30,6 +30,17 @@ module.exports = function (robot) {
   })
 
   /**
+   * You can reply with a custom keyboard
+   */
+  robot.respond(/I want to play a game/, res => {
+    res.sendMessage(res.envelope.room, 'Really?', {
+      reply_markup: {
+        keyboard: [['Start', 'Stop']]
+      }
+    })
+  })
+
+  /**
    * For any special needs you can access the telegram instance on Robot.
    */
   robot.respond(/image me (.*)/, async res => {
@@ -47,6 +58,16 @@ module.exports = function (robot) {
     const image = 'https://bit.ly/2VlEgCs'
     res.sendPhoto(res.envelope.room, image, {
       caption: 'Totoro!'
+    })
+  })
+
+  /**
+   * Every custom Telegram methods reply with a Promise and you can catch errors
+   */
+  robot.respond(/error/i, function (res) {
+    res.sendMessage(nonExistentUserId, 'Boom!').catch(error => {
+      console.log(error.code) // => 'ETELEGRAM'
+      console.log(error.response.body) // => { ok: false, error_code: 400, description: 'Bad Request: chat not found' }
     })
   })
 

@@ -93,41 +93,42 @@ class TelegramAdapter extends Hubot.Adapter {
     )
 
     if (!message.from) {
-      this.robot.logger.debug('I will take care of this later...')
-      return
-    }
-
-    const messageId = String(message.message_id)
-    if (message.text) {
-      this.robot.logger.debug(
-        `Received message: ${message.from.username} said '${message.text}'`
-      )
-      const text = this.cleanMessageText(message.text, message.chat.id)
-      const user = this.createUser(message.from, message.chat)
-      this.receive(new TextMessage(user, text, messageId))
-    } else if (message.new_chat_members) {
-      // new_chat_members is an array of users
-      message.new_chat_members.map(u => {
-        const user = this.createUser(u, message.chat)
-        this.robot.logger.info(`User ${user.id} joined chat ${message.chat.id}`)
-        this.receive(new Hubot.EnterMessage(user, false))
-      })
-    } else if (message.left_chat_member) {
-      const user = this.createUser(message.left_chat_member, message.chat)
-      this.robot.logger.info(`User ${user.id} left chat ${message.chat.id}`)
-      this.receive(new Hubot.LeaveMessage(user, false))
-    } else if (message.new_chat_title) {
-      const user = this.createUser(message.from, message.chat)
-      this.robot.logger.info(
-        `User ${user.id} changed chat ${message.chat.id} title: ${message.new_chat_title}`
-      )
-      this.receive(
-        new Hubot.TopicMessage(user, message.new_chat_title, messageId)
-      )
+      this.robot.logger.debug('message', JSON.stringify(message))
     } else {
-      const user = this.createUser(message.from, message.chat)
-      const msg = new Hubot.Message(user, false)
-      this.receive(new Hubot.CatchAllMessage(msg))
+      const messageId = String(message.message_id)
+      if (message.text) {
+        this.robot.logger.debug(
+          `Received message: ${message.from.username} said '${message.text}'`
+        )
+        const text = this.cleanMessageText(message.text, message.chat.id)
+        const user = this.createUser(message.from, message.chat)
+        this.receive(new TextMessage(user, text, messageId))
+      } else if (message.new_chat_members) {
+        // new_chat_members is an array of users
+        message.new_chat_members.map(u => {
+          const user = this.createUser(u, message.chat)
+          this.robot.logger.info(
+            `User ${user.id} joined chat ${message.chat.id}`
+          )
+          this.receive(new Hubot.EnterMessage(user, false))
+        })
+      } else if (message.left_chat_member) {
+        const user = this.createUser(message.left_chat_member, message.chat)
+        this.robot.logger.info(`User ${user.id} left chat ${message.chat.id}`)
+        this.receive(new Hubot.LeaveMessage(user, false))
+      } else if (message.new_chat_title) {
+        const user = this.createUser(message.from, message.chat)
+        this.robot.logger.info(
+          `User ${user.id} changed chat ${message.chat.id} title: ${message.new_chat_title}`
+        )
+        this.receive(
+          new Hubot.TopicMessage(user, message.new_chat_title, messageId)
+        )
+      } else {
+        const user = this.createUser(message.from, message.chat)
+        const msg = new Hubot.Message(user, false)
+        this.receive(new Hubot.CatchAllMessage(msg))
+      }
     }
   }
 
@@ -175,6 +176,6 @@ class TelegramAdapter extends Hubot.Adapter {
 
 module.exports.use = (robot: Hubot.Robot) => {
   const adapter = new TelegramAdapter(robot)
-  robot.listenerMiddleware(telegramMiddleware(adapter))
+  robot.receiveMiddleware(telegramMiddleware(adapter))
   return adapter
 }

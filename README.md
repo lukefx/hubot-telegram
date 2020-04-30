@@ -1,6 +1,6 @@
 # Hubot Telegram Adapter
 
-[![Build Status](https://travis-ci.org/lukefx/hubot-telegram.svg?branch=feature-issue-5)](https://travis-ci.org/lukefx/hubot-telegram)
+[![Build Status](https://travis-ci.org/lukefx/hubot-telegram.svg)](https://travis-ci.org/lukefx/hubot-telegram)
 
 [Hubot](https://hubot.github.com/docs/) adapter for interfacting with the [Telegram Bot API](https://core.telegram.org/bots/api)
 
@@ -8,9 +8,9 @@
 
 First of read the docs on how to create a new [Telegram Bot](https://core.telegram.org/bots#botfather). Once you have a bot created, follow these steps:
 
-* `npm install --save hubot-telegram`
-* Set the environment variables specified in **Configuration**
-* Run hubot `bin/hubot -a telegram`
+- `npm install --save hubot-telegram`
+- Set the environment variables specified in **Configuration**
+- Run hubot `bin/hubot -a telegram`
 
 ## Configuration
 
@@ -30,42 +30,40 @@ You can specify the interval (in milliseconds) in which the adapter will poll Te
 
 ## Telegram Specific Functionality (ie. Stickers, Images)
 
-If you want to create a script that relies on specific Telegram functionality that is not available to Hubot normall, you can do so by emitting the `telegram:invoke` event in your script:
+the adapter will enhance the Response object with some custom methods with the same signature of the APIs.
+For example, sending an image:
 
-``` nodejs
-
+```js
 module.exports = function (robot) {
-
-    robot.hear(/send sticker/i, function (res) {
-
-        # https://core.telegram.org/bots/api#sendsticker
-
-        robot.emit('telegram:invoke', 'sendSticker', { chat_id: xxx, sticker: 'sticker_id' }, function (error, response) {
-            console.log(error);
-            console.log(response);
-        });
-    });
-};
-
+  robot.hear(/send totoro/i, res => {
+    const image = fs.createReadStream(__dirname + '/image.png')
+    // https://core.telegram.org/bots/api#sendphoto
+    res.sendPhoto(res.envelope.room, image, {
+      caption: 'Totoro!'
+    })
+  })
+}
 ```
 
 **Note:** An example script of how to use this is located in the `example/` folder
 
 If you want to supplement your message delivery with extra features such as **markdown** syntax or **keyboard** replies, you can specify these settings on the `res.envelope` variable in your plugin.
 
-``` nodejs
-
-robot.respond(/(.*)/i, function (res) {
-    res.envelope.telegram = { reply_markup: { keyboard: [["test"]] }}
-
-    res.reply("Select the option from the keyboard specified.");
-};
-
+```js
+robot.respond(/(.*)/i, res => {
+  res.sendMessage(
+    res.envelope.room,
+    'Select the option from the keyboard specified.',
+    {
+      reply_markup: {
+        keyboard: [['Start', 'Stop']]
+      }
+    }
+  )
+})
 ```
-
-**Note:** Markdown will automatically be parsed if the supported markdown characters are included. You can override this by specifying the `parse_mode` value in the `envelope.telegram` key.
 
 ## Contributors
 
-* Luke Simone - [https://github.com/lukefx](https://github.com/lukefx)
-* Chris Brand - [https://github.com/arcturial](https://github.com/arcturial)
+- Luca Simone - [https://github.com/lukefx](https://github.com/lukefx)
+- Chris Brand - [https://github.com/arcturial](https://github.com/arcturial)
