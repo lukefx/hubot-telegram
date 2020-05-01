@@ -12,7 +12,7 @@ class FakeRobot extends EventEmitter {
         return Object.assign({ id }, options)
       })
     }
-    this.receiveMiddleware = jest.fn()
+    this.listenerMiddleware = jest.fn()
   }
 }
 

@@ -176,6 +176,6 @@ class TelegramAdapter extends Hubot.Adapter {
 
 module.exports.use = (robot: Hubot.Robot) => {
   const adapter = new TelegramAdapter(robot)
-  robot.receiveMiddleware(telegramMiddleware(adapter))
+  robot.listenerMiddleware(telegramMiddleware(adapter))
   return adapter
 }
