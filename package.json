@@ -38,6 +38,7 @@
     "@types/node-telegram-bot-api": "^0.40.2",
     "hubot": "^3.3.2",
     "jest": "^25.3.0",
+    "nock": "^12.0.3",
     "ts-jest": "^25.4.0",
     "typescript": "^3.8.3"
   },

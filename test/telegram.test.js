@@ -135,7 +135,7 @@ describe('Telegram', function () {
   })
 
   describe('#handleUpdate()', function () {
-    it('should handle updates', function () {
+    it('should handle a message update', function () {
       telegram.handleUpdate(
         {
           message_id: 1,

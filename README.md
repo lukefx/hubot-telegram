@@ -20,13 +20,13 @@ This adapter uses the following environment variables:
 
 The token that the [BotFather](https://core.telegram.org/bots#botfather) gives you
 
-**TELEGRAM_WEBHOOK** (optional)
-
-You can specify a [webhook](https://core.telegram.org/bots/api#setwebhook) URL. The adapter will register TELEGRAM_WEBHOOK/TELEGRAM_TOKEN with Telegram and listen there.
-
 **TELEGRAM_INTERVAL** (optional)
 
 You can specify the interval (in milliseconds) in which the adapter will poll Telegram for updates. This option only applies if you are not using a [webhook](https://core.telegram.org/bots/api#setwebhook).
+
+**TELEGRAM_WEBHOOK** (optional)
+
+You can specify a [webhook](https://core.telegram.org/bots/api#setwebhook) URL. The adapter will register TELEGRAM_WEBHOOK/TELEGRAM_TOKEN with Telegram and listen there.
 
 ## Telegram Specific Functionality (ie. Stickers, Images)
 
@@ -47,7 +47,7 @@ module.exports = function (robot) {
 
 **Note:** An example script of how to use this is located in the `example/` folder
 
-If you want to supplement your message delivery with extra features such as **markdown** syntax or **keyboard** replies, you can specify these settings on the `res.envelope` variable in your plugin.
+If you want to supplement your message delivery with extra features such as **markdown** syntax or **keyboard** replies, you can specify these parameters on the `options` of sendMessage:
 
 ```js
 robot.respond(/(.*)/i, res => {
@@ -61,6 +61,28 @@ robot.respond(/(.*)/i, res => {
     }
   )
 })
+```
+
+`inlineQuery` are a way to reply without a conversation to the bot. That's why they don't really fit into the normal hear/respond flow of Hubot.
+To support `inlineQuery` you can listen to event on the `telegram` object exposed by the `robot` object.
+
+```js
+module.exports = function (robot) {
+  robot.telegram.on('inline_query', async inlineQuery => {
+    // Initially there is always a query with empty string
+    // Usually is to provide suggestions
+    if (inlineQuery.query) {
+      const searches = await google.search(inlineQuery.query, 50) // Max 50 results for inlineQuery
+      const results = searches.map(result => ({
+        type: 'photo',
+        id: result.id,
+        thumb_url: result['thumbnail'],
+        photo_url: result['url']
+      }))
+      robot.telegram.answerInlineQuery(inlineQuery.id, results)
+    }
+  })
+}
 ```
 
 ## Contributors
