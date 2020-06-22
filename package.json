@@ -5,7 +5,7 @@
   "main": "lib/telegram.js",
   "scripts": {
     "build": "tsc",
-    "test": "jest"
+    "test": "CI=true jest --forceExit --detectOpenHandles"
   },
   "repository": {
     "type": "git",

@@ -1,6 +1,7 @@
 process.env.TELEGRAM_TOKEN = '1234'
+
 const FakeRobot = require('./hubot.stub')
-const hubot = new FakeRobot()
+const robot = new FakeRobot()
 
 const sendMessage = jest.fn(() => Promise.resolve())
 
@@ -9,16 +10,15 @@ jest.mock('node-telegram-bot-api', () => {
     getMe: jest.fn(() =>
       Promise.resolve({
         id: 1,
-        first_name: hubot.name,
-        username: hubot.name
+        first_name: robot.name,
+        username: robot.name
       })
     ),
     sendMessage
   }))
 })
 
-const telegram = require('./../src/telegram').use(hubot)
-const assert = require('assert')
+const telegram = require('./../src/telegram').use(robot)
 
 describe('Telegram', function () {
   describe('#cleanMessageText()', function () {
@@ -26,45 +26,45 @@ describe('Telegram', function () {
     it('private chat: should auto prepend the bot name to message text', function () {
       var input = 'ship it'
       var text = telegram.cleanMessageText(input, 1)
-      assert.equal(hubot.name + ' ' + input, text)
+      expect(text).toBe(robot.name + ' ' + input)
     })
 
     // eg. BotName ship it => BotName ship it
     it('private chat: should not prepend bot name if has already been provided', function () {
       var input = 'ship it'
-      var text = telegram.cleanMessageText(hubot.name + ' ' + input, 1)
-      assert.equal(hubot.name + ' ' + input, text)
+      var text = telegram.cleanMessageText(robot.name + ' ' + input, 1)
+      expect(text).toBe(robot.name + ' ' + input)
 
       var text = telegram.cleanMessageText(
-        hubot.name.toLowerCase() + ' ' + input,
+        robot.name.toLowerCase() + ' ' + input,
         1
       )
-      assert.equal(hubot.name + ' ' + input, text)
+      expect(text).toBe(robot.name + ' ' + input)
 
       var text = telegram.cleanMessageText(
-        '@' + hubot.name.toLowerCase() + ' ' + input,
+        '@' + robot.name.toLowerCase() + ' ' + input,
         1
       )
-      assert.equal(hubot.name + ' ' + input, text)
+      expect(text).toBe(robot.name + ' ' + input)
     })
 
     // eg. BotAliasName ship it => BotAliasName ship it
     it('private chat: should not prepend bot name if an alias has already been provided', function () {
       var input = 'ship it'
-      var text = telegram.cleanMessageText(hubot.alias + ' ' + input, 1)
-      assert.equal(hubot.name + ' ' + input, text)
+      var text = telegram.cleanMessageText(robot.alias + ' ' + input, 1)
+      expect(text).toBe(robot.name + ' ' + input)
 
       var text = telegram.cleanMessageText(
-        hubot.alias.toLowerCase() + ' ' + input,
+        robot.alias.toLowerCase() + ' ' + input,
         1
       )
-      assert.equal(hubot.name + ' ' + input, text)
 
+      expect(text).toBe(robot.name + ' ' + input)
       var text = telegram.cleanMessageText(
-        '@' + hubot.alias.toLowerCase() + ' ' + input,
+        '@' + robot.alias.toLowerCase() + ' ' + input,
         1
       )
-      assert.equal(hubot.name + ' ' + input, text)
+      expect(text).toBe(robot.name + ' ' + input)
     })
   })
 
@@ -92,10 +92,10 @@ describe('Telegram', function () {
       }
 
       var result = telegram.createUser(original, 1)
-      assert.equal(original.first_name, result.first_name)
+      expect(original.first_name).toBe(result.first_name)
 
       var result = telegram.createUser(user, 1)
-      assert.equal(user.first_name, result.first_name)
+      expect(user.first_name).toBe(result.first_name)
     })
 
     it('should use the new user object if the username changed', function () {
@@ -121,7 +121,7 @@ describe('Telegram', function () {
       }
 
       var result = telegram.createUser(user, 1)
-      assert.equal(user.username, result.username)
+      expect(user.username).toBe(result.username)
     })
   })
 
@@ -157,7 +157,7 @@ describe('Telegram', function () {
         },
         { type: 'text' }
       )
-      expect(hubot.receive).toHaveBeenCalledTimes(1)
+      expect(robot.receive).toHaveBeenCalledTimes(1)
     })
   })
 })
