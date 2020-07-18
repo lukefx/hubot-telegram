@@ -30,7 +30,7 @@ You can specify a [webhook](https://core.telegram.org/bots/api#setwebhook) URL. 
 
 ## Telegram Specific Functionality (ie. Stickers, Images)
 
-the adapter will enhance the Response object with some custom methods with the same signature of the APIs.
+The adapter will enhance the Response object with some custom methods with the same signature of the APIs.
 For example, sending an image:
 
 ```js
@@ -46,6 +46,20 @@ module.exports = function (robot) {
 ```
 
 **Note:** An example script of how to use this is located in the `example/` folder
+
+The list of methods exposed through a middleware to the response object is:
+
+- sendMessage
+- sendMessage
+- sendPhoto
+- sendAudio
+- sendDocument
+- sendMediaGroup
+- sendSticker
+- sendVideo
+- sendVideoNote
+- sendVoice
+- sendChatAction
 
 If you want to supplement your message delivery with extra features such as **markdown** syntax or **keyboard** replies, you can specify these parameters on the `options` of sendMessage:
 
