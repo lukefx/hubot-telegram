@@ -1,10 +1,11 @@
 {
   "name": "hubot-telegram",
-  "version": "0.1.2",
+  "version": "1.2.0",
   "description": "Hubot adapter for Telegram",
-  "main": "./src/telegram",
+  "main": "lib/telegram.js",
   "scripts": {
-    "test": "node_modules\\.bin\\mocha --compilers coffee:coffee-script/register"
+    "build": "tsc",
+    "test": "CI=true jest --forceExit --detectOpenHandles"
   },
   "repository": {
     "type": "git",
@@ -27,11 +28,21 @@
   },
   "homepage": "https://github.com/lukefx/hubot-telegram",
   "dependencies": {
-    "telegrambot": "*"
+    "node-telegram-bot-api": "^0.50.0",
+    "telegrambot": "^0.1.0"
   },
   "devDependencies": {
-    "hubot": "*",
-    "coffee-script": "*",
-    "mocha": "*"
+    "@types/hubot": "^3.3.0",
+    "@types/jest": "^26.0.5",
+    "@types/node": "^14.0.23",
+    "@types/node-telegram-bot-api": "^0.50.2",
+    "hubot": "^3.3.2",
+    "jest": "^26.1.0",
+    "nock": "^13.0.2",
+    "ts-jest": "^26.1.3",
+    "typescript": "^3.9.7"
+  },
+  "jest": {
+    "verbose": true
   }
 }
