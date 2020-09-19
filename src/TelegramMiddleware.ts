@@ -15,7 +15,7 @@ export const telegramMiddleware = adapter => (
 
   // Haven't found a better way to do this...
   response.sendMessage = adapter.bot.sendMessage.bind(adapter.bot)
-  response.sendMessage = adapter.bot.sendMessage.bind(adapter.bot)
+  response.sendAnimation = adapter.bot.sendAnimation.bind(adapter.bot)
   response.sendPhoto = adapter.bot.sendPhoto.bind(adapter.bot)
   response.sendAudio = adapter.bot.sendAudio.bind(adapter.bot)
   response.sendDocument = adapter.bot.sendDocument.bind(adapter.bot)
