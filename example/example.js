@@ -30,6 +30,16 @@ module.exports = function (robot) {
   })
 
   /**
+   * With the sendMessage or any other send* method you can add a config object
+   * with the parameter from the API: https://core.telegram.org/method/messages.sendMessage
+   */
+  robot.respond(/price (.*)/, async res => {
+    res.sendMessage(res.envelope.room, 'This is a _markdown_ *message*', {
+      parse_mode: 'MarkdownV2'
+    })
+  })
+
+  /**
    * You can reply with a custom keyboard
    */
   robot.respond(/I want to play a game/, res => {

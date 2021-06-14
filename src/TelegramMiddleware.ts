@@ -13,8 +13,7 @@ export const telegramMiddleware = adapter => (
 ): void => {
   const response = context.response as TelegramResponse
 
-  // Haven't found a better way to do this...
-  response.sendMessage = adapter.bot.sendMessage.bind(adapter.bot)
+  // We will be able to use res.sendMessage directly in scripts
   response.sendMessage = adapter.bot.sendMessage.bind(adapter.bot)
   response.sendPhoto = adapter.bot.sendPhoto.bind(adapter.bot)
   response.sendAudio = adapter.bot.sendAudio.bind(adapter.bot)

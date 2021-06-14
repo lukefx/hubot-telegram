@@ -8,7 +8,6 @@ export interface TelegramResponse extends Response {
     text: string,
     options?: TelegramBot.SendMessageOptions
   ): Promise<TelegramBot.Message>
-
   sendPhoto(
     chatId: number | string,
     photo: string | Stream | Buffer,
